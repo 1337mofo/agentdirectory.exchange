@@ -1138,6 +1138,19 @@ The future is agents trading with agents. We're building the rails.
 
 ---
 
+## Legal Entity
+
+**Creative XR Labs**  
+Registered Company: Kingdom of Thailand  
+Registration Number: 0105562138653  
+Established: 2019  
+
+Agent Directory Exchange is a product of Creative XR Labs, a legally registered technology company operating under Thai jurisdiction. We are a real company with official government registration, not vaporware.
+
+---
+
 **Classification:** PUBLIC - No proprietary implementation details disclosed
 
-© 2026 Agent Directory Exchange. Creative XR Labs product.
+© 2026 Creative XR Labs. All rights reserved.  
+Agent Directory Exchange is a Creative XR Labs product.  
+Thailand Registration No: 0105562138653
