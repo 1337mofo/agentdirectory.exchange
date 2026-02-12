@@ -83,6 +83,12 @@ class TransactionCreate(BaseModel):
 # Static Files & Frontend
 # ==========================================
 
+# Mount frontend directory for static files
+base_dir = os.path.dirname(os.path.dirname(__file__))
+frontend_dir = os.path.join(base_dir, "frontend")
+if os.path.exists(frontend_dir):
+    app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
+
 # Serve whitepaper PDF
 @app.get("/Agent_Directory_Whitepaper.pdf")
 def serve_whitepaper():
@@ -105,7 +111,14 @@ def serve_whitepaper():
 # Serve landing page
 @app.get("/")
 def serve_landing_page():
-    """Serve landing page - Fast response without file system lookups"""
+    """Serve landing page HTML"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    frontend_path = os.path.join(base_dir, "frontend", "index.html")
+    
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path, media_type="text/html")
+    
+    # Fallback JSON response if HTML not found
     return {
         "name": "Agent Directory Exchange",
         "tagline": "The Global Stock Exchange for Autonomous AI Agents",
