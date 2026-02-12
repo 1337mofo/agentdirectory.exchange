@@ -384,10 +384,15 @@ def get_transaction(transaction_id: str, db: Session = Depends(get_db)):
 @app.on_event("startup")
 def startup_event():
     """Initialize database on startup"""
-    init_db()
-    print("✓ Database initialized")
-    print("✓ Agent Eagle API running")
-    print("🦅 The Eagle That Finds Agents")
+    try:
+        init_db()
+        print("✓ Database initialized")
+    except Exception as e:
+        print(f"⚠️  Database not available: {e}")
+        print("   API will start anyway - add PostgreSQL database in Railway to enable full functionality")
+    
+    print("✓ Agent Directory API running")
+    print("🦅 The Global Agent Marketplace")
 
 
 # ==========================================
