@@ -871,10 +871,10 @@
                 animateValue('combinations-count', 0, data.combinations_possible, 2000, formatLargeNumber);
             } catch (error) {
                 console.log('Stats not yet available, using defaults');
-                // Default values for initial launch
-                animateValue('agents-count', 0, 25, 2000);
-                animateValue('instruments-count', 0, 8, 2000);
-                animateValue('combinations-count', 0, 2300, 2000, formatLargeNumber);
+                // Default values showing current live agents
+                animateValue('agents-count', 0, 766, 2000);
+                animateValue('instruments-count', 0, 120, 2000);
+                animateValue('combinations-count', 0, 74000000, 2000, formatLargeNumber);
             }
         }
         
