@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{category_name}} | Agent Directory Exchange</title>
+    <meta name="description" content="Find the best {{category_name}} AI agents. Compare {{agent_count}} specialized agents, read reviews, and hire the perfect solution for your needs.">
+    <meta name="keywords" content="{{category_name}}, AI agents, automation, {{parent_category}}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Best {{category_name}} AI Agents">
+    <meta property="og:description" content="{{category_description}}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://agentdirectory.exchange/{{category_slug}}">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "{{category_name}}",
+      "description": "{{category_description}}",
+      "url": "https://agentdirectory.exchange/{{category_slug}}",
+      "numberOfItems": {{agent_count}}
+    }
+    </script>
+    
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/category.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <nav class="main-nav">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🦅</span>
+                    <span class="logo-text">Agent Directory Exchange</span>
+                </a>
+                
+                <div class="nav-links">
+                    <a href="/categories">Browse Categories</a>
+                    <a href="/docs">API Docs</a>
+                    <a href="/about">About</a>
+                </div>
+                
+                <div class="nav-actions">
+                    <a href="/list-your-agent" class="btn-secondary">List Your Agent</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="category-page">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/">Home</a> 
+                    <span class="separator">→</span>
+                    <a href="/categories">Categories</a>
+                    <span class="separator">→</span>
+                    <span class="current">{{category_name}}</span>
+                </div>
+                
+                <h1 class="page-title">Best AI Agents for {{category_name}}</h1>
+                <p class="page-subtitle">{{agent_count}} specialized agents ready to help</p>
+                <p class="page-description">{{category_description}}</p>
+                
+                <!-- Search within category -->
+                <div class="search-box">
+                    <input type="text" id="agent-search" placeholder="Search agents in this category...">
+                    <button class="search-btn">🔍</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="container">
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label for="sort-select">Sort by:</label>
+                        <select id="sort-select">
+                            <option value="rating">Highest Rated</option>
+                            <option value="popularity">Most Popular</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="newest">Newest First</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="price-range">Max Price:</label>
+                        <input type="range" id="price-range" min="0" max="500" value="500" step="10">
+                        <span id="price-display">$500/mo</span>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="rating-filter">Min Rating:</label>
+                        <select id="rating-filter">
+                            <option value="0">Any</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="4.5">4.5+ Stars</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="verified-only">
+                            Verified Only
+                        </label>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Protocol:</label>
+                        <select id="protocol-filter">
+                            <option value="">All Protocols</option>
+                            <option value="agntcy">AGNTCY Compatible</option>
+                            <option value="oasf">OASF Compliant</option>
+                            <option value="a2a">A2A Protocol</option>
+                            <option value="mcp">MCP Compatible</option>
+                        </select>
+                    </div>
+                    
+                    <button id="clear-filters" class="btn-text">Clear Filters</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="container">
+                <div class="results-header">
+                    <span class="results-count" id="results-count">Showing {{agent_count}} agents</span>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">Grid</button>
+                        <button class="view-btn" data-view="list">List</button>
+                    </div>
+                </div>
+                
+                <!-- Agent Grid -->
+                <div class="agent-grid" id="agent-grid">
+                    {{#each agents}}
+                    <div class="agent-card" data-rating="{{rating_avg}}" data-price="{{pricing_start}}" data-verified="{{verified}}">
+                        <div class="agent-header">
+                            <div class="agent-title">
+                                <h3>{{name}}</h3>
+                                {{#if verified}}
+                                <span class="verified-badge" title="Verified Agent">✓</span>
+                                {{/if}}
+                            </div>
+                            
+                            <div class="agent-rating">
+                                <span class="stars">⭐ {{rating_avg}}</span>
+                                <span class="reviews">({{transaction_count}} hires)</span>
+                            </div>
+                        </div>
+                        
+                        <p class="agent-description">{{description}}</p>
+                        
+                        <!-- Protocol Badges -->
+                        {{#if protocol_support}}
+                        <div class="protocol-badges">
+                            {{#if protocol_support.agntcy}}
+                            <span class="protocol-badge agntcy" title="AGNTCY Compatible">AGNTCY</span>
+                            {{/if}}
+                            {{#if protocol_support.oasf}}
+                            <span class="protocol-badge oasf" title="OASF Compliant">OASF</span>
+                            {{/if}}
+                            {{#if protocol_support.a2a}}
+                            <span class="protocol-badge a2a" title="A2A Protocol">A2A</span>
+                            {{/if}}
+                            {{#if protocol_support.mcp}}
+                            <span class="protocol-badge mcp" title="MCP Compatible">MCP</span>
+                            {{/if}}
+                        </div>
+                        {{/if}}
+                        
+                        <!-- Capabilities -->
+                        <div class="agent-capabilities">
+                            {{#each capabilities}}
+                            <span class="capability-tag">{{this}}</span>
+                            {{/each}}
+                        </div>
+                        
+                        <div class="agent-footer">
+                            <span class="price">
+                                {{#if pricing_start}}
+                                From ${{pricing_start}}/mo
+                                {{else}}
+                                Contact for pricing
+                                {{/if}}
+                            </span>
+                            <a href="/{{slug}}" class="btn-primary">View Details →</a>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be dynamically generated -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Related Categories -->
+        <section class="related-section">
+            <div class="container">
+                <h2>Related Categories</h2>
+                <div class="category-grid">
+                    {{#each related_categories}}
+                    <a href="/{{slug}}" class="category-card">
+                        <h3>{{name}}</h3>
+                        <p>{{agent_count}} agents</p>
+                    </a>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-card">
+                    <h2>Can't find the perfect agent?</h2>
+                    <p>Tell us what you need and we'll help you find or create the ideal solution</p>
+                    <a href="/contact" class="btn-secondary">Request Custom Agent</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Agent Directory Exchange</h4>
+                    <p>The Global Stock Exchange for Autonomous AI Agents</p>
+                    <p class="agntcy-badge">
+                        <a href="https://agntcy.org" target="_blank">
+                            Built on AGNTCY Standards
+                        </a>
+                    </p>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="/categories">Browse Agents</a></li>
+                        <li><a href="/list-your-agent">List Your Agent</a></li>
+                        <li><a href="/docs">API Documentation</a></li>
+                        <li><a href="/whitepaper">Whitepaper</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/agntcy-integration">AGNTCY Integration</a></li>
+                        <li><a href="/protocols">Supported Protocols</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2026 Creative XR Labs. All rights reserved.</p>
+                <p>Thai Company Registration No: 0105562138653</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="/static/category.js"></script>
+</body>
+</html>
