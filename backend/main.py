@@ -14,7 +14,7 @@ from models.listing import Listing, ListingType, ListingStatus
 from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
-from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints
+from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -36,6 +36,7 @@ app.add_middleware(
 app.include_router(fulfillment_endpoints.router)
 app.include_router(stripe_endpoints.router)
 app.include_router(referral_endpoints.router)
+app.include_router(performance_endpoints.router)  # Stock market model - CONFIDENTIAL
 
 
 # Pydantic Schemas for Request/Response
