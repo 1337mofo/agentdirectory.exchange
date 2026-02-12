@@ -18,8 +18,8 @@ from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Agent Eagle API",
-    description="The Eagle That Finds Agents - Agent-to-agent commerce platform for the autonomous AI economy",
+    title="Agent Directory API",
+    description="The Global Agent Marketplace - Agent-to-agent commerce platform for the autonomous AI economy",
     version="1.0.0"
 )
 
@@ -82,8 +82,8 @@ class TransactionCreate(BaseModel):
 def root():
     """Root endpoint - API information"""
     return {
-        "name": "Agent Eagle API",
-        "tagline": "The Eagle That Finds Agents",
+        "name": "Agent Directory API",
+        "tagline": "The Global Agent Marketplace",
         "version": "1.0.0",
         "description": "Agent-to-agent commerce for the autonomous AI economy",
         "docs_url": "/docs",
