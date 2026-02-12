@@ -451,6 +451,79 @@
             opacity: 0.8;
         }
         
+        /* Agent Ticker */
+        .ticker-container {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 212, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 1rem 0;
+            position: relative;
+        }
+        
+        .ticker-track {
+            display: flex;
+            animation: scroll 120s linear infinite;
+            white-space: nowrap;
+        }
+        
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 3rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            gap: 1rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .ticker-symbol {
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        
+        .ticker-name {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .ticker-value {
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ticker-change {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .ticker-change.up {
+            color: #00FF88;
+        }
+        
+        .ticker-change.down {
+            color: #FF4444;
+        }
+        
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        
+        .ticker-container:hover .ticker-track {
+            animation-play-state: paused;
+        }
+        
         /* Footer */
         footer {
             background: rgba(0, 0, 0, 0.5);
@@ -591,6 +664,13 @@
                 <h3 id="combinations-count">0</h3>
                 <p>Value Combinations Possible</p>
             </div>
+        </div>
+    </div>
+    
+    <!-- Agent Ticker -->
+    <div class="ticker-container">
+        <div class="ticker-track" id="ticker-track">
+            <!-- Agents will be dynamically loaded here -->
         </div>
     </div>
     
@@ -876,8 +956,86 @@
             return num.toString();
         }
         
-        // Load stats on page load
+        // Agent Ticker
+        async function loadAgentTicker() {
+            try {
+                // Fetch real agents from API
+                const response = await fetch('/api/v1/agents?limit=50');
+                const data = await response.json();
+                
+                let agents = data.agents || [];
+                
+                // If no agents from API, use sample data
+                if (agents.length === 0) {
+                    agents = generateSampleAgents(30);
+                }
+                
+                // Create ticker items (duplicate for seamless loop)
+                const tickerTrack = document.getElementById('ticker-track');
+                const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
+                
+                // Duplicate for seamless scrolling
+                tickerTrack.innerHTML = tickerHTML + tickerHTML;
+                
+            } catch (error) {
+                console.log('Agent ticker using sample data');
+                const agents = generateSampleAgents(30);
+                const tickerTrack = document.getElementById('ticker-track');
+                const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
+                tickerTrack.innerHTML = tickerHTML + tickerHTML;
+            }
+        }
+        
+        function createTickerItem(agent) {
+            const symbol = generateTickerSymbol(agent.name);
+            const value = agent.value || (Math.random() * 5000 + 500).toFixed(0);
+            const change = agent.change || ((Math.random() - 0.5) * 20).toFixed(2);
+            const changeClass = parseFloat(change) >= 0 ? 'up' : 'down';
+            const changeSymbol = parseFloat(change) >= 0 ? '▲' : '▼';
+            
+            return `
+                <div class="ticker-item">
+                    <span class="ticker-symbol">${symbol}</span>
+                    <span class="ticker-name">${agent.name}</span>
+                    <span class="ticker-value">$${value}</span>
+                    <span class="ticker-change ${changeClass}">${changeSymbol} ${Math.abs(change)}%</span>
+                </div>
+            `;
+        }
+        
+        function generateTickerSymbol(name) {
+            // Create ticker symbol from agent name (like stock tickers)
+            const words = name.split(' ').filter(w => w.length > 2);
+            if (words.length >= 2) {
+                return (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
+            }
+            return name.substring(0, 4).toUpperCase();
+        }
+        
+        function generateSampleAgents(count) {
+            const sampleNames = [
+                'Customer Support AI', 'Code Assistant Pro', 'Data Analyzer Elite',
+                'Content Writer', 'Lead Generation Bot', 'Social Media Manager',
+                'Email Marketing AI', 'Research Assistant', 'Translation Engine',
+                'Image Generator', 'Video Editor AI', 'SEO Optimizer',
+                'Sales Automation', 'Project Manager', 'Analytics Dashboard',
+                'Quality Assurance', 'Documentation Writer', 'Bug Tracker',
+                'Performance Monitor', 'Security Auditor', 'DevOps Helper',
+                'Database Optimizer', 'API Builder', 'Testing Framework',
+                'Deployment Manager', 'Cost Analyzer', 'Resource Planner',
+                'Compliance Checker', 'Report Generator', 'Workflow Automator'
+            ];
+            
+            return sampleNames.slice(0, count).map(name => ({
+                name: name,
+                value: (Math.random() * 5000 + 500).toFixed(0),
+                change: ((Math.random() - 0.5) * 20).toFixed(2)
+            }));
+        }
+        
+        // Load stats and ticker on page load
         fetchStats();
+        loadAgentTicker();
     </script>
 </body>
 </html>
