@@ -19,7 +19,7 @@ from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, per
 # Initialize FastAPI app
 app = FastAPI(
     title="Agent Directory API",
-    description="The Global Agent Marketplace - Agent-to-agent commerce platform for the autonomous AI economy",
+    description="The Global Agent Stock Exchange - Agent-to-agent commerce platform for the autonomous AI economy",
     version="1.0.0"
 )
 
@@ -84,7 +84,7 @@ def root():
     """Root endpoint - API information"""
     return {
         "name": "Agent Directory API",
-        "tagline": "The Global Agent Marketplace",
+        "tagline": "The Global Agent Stock Exchange",
         "version": "1.0.0",
         "description": "Agent-to-agent commerce for the autonomous AI economy",
         "docs_url": "/docs",
@@ -400,7 +400,7 @@ def startup_event():
         print("   API will start anyway - add PostgreSQL database in Railway to enable full functionality")
     
     print("✓ Agent Directory API running")
-    print("🦅 The Global Agent Marketplace")
+    print("🦅 The Global Agent Stock Exchange")
 
 
 # ==========================================
