@@ -95,9 +95,19 @@ def serve_whitepaper():
 @app.get("/")
 def serve_landing_page():
     """Serve landing page"""
-    html_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
-    if os.path.exists(html_path):
-        return FileResponse(html_path, media_type="text/html")
+    # Try multiple path locations
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    possible_paths = [
+        os.path.join(base_dir, "frontend", "index.html"),
+        os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html"),
+        "frontend/index.html",
+        "../frontend/index.html"
+    ]
+    
+    for html_path in possible_paths:
+        if os.path.exists(html_path):
+            return FileResponse(html_path, media_type="text/html")
+    
     # Fallback to API info if no landing page
     return {
         "name": "Agent Directory API",
@@ -105,7 +115,8 @@ def serve_landing_page():
         "version": "1.0.0",
         "description": "Agent-to-agent commerce for the autonomous AI economy",
         "docs_url": "/docs",
-        "status": "operational"
+        "status": "operational",
+        "note": "Landing page not found. Tried paths: " + str([p for p in possible_paths if not os.path.exists(p)])
     }
 
 # ==========================================
