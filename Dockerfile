@@ -3,8 +3,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy backend code
+# Copy all necessary files
 COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+COPY Agent_Directory_Whitepaper.pdf ./
 
 # Install Python dependencies
 WORKDIR /app/backend

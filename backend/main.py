@@ -86,9 +86,19 @@ class TransactionCreate(BaseModel):
 @app.get("/Agent_Directory_Whitepaper.pdf")
 def serve_whitepaper():
     """Serve whitepaper PDF"""
-    pdf_path = os.path.join(os.path.dirname(__file__), "..", "Agent_Directory_Whitepaper.pdf")
-    if os.path.exists(pdf_path):
-        return FileResponse(pdf_path, media_type="application/pdf", filename="Agent_Directory_Whitepaper.pdf")
+    # Try multiple path locations
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    possible_paths = [
+        os.path.join(base_dir, "Agent_Directory_Whitepaper.pdf"),
+        os.path.join(os.path.dirname(__file__), "..", "Agent_Directory_Whitepaper.pdf"),
+        "Agent_Directory_Whitepaper.pdf",
+        "../Agent_Directory_Whitepaper.pdf"
+    ]
+    
+    for pdf_path in possible_paths:
+        if os.path.exists(pdf_path):
+            return FileResponse(pdf_path, media_type="application/pdf", filename="Agent_Directory_Whitepaper.pdf")
+    
     raise HTTPException(status_code=404, detail="Whitepaper not found")
 
 # Serve landing page
