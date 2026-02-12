@@ -18,6 +18,10 @@ class ListingType(str, enum.Enum):
     API_ACCESS = "api_access"  # API endpoint access
     DATASET = "dataset"  # Data/information
     MODEL = "model"  # Trained AI model
+    INSTRUMENT = "instrument"  # Layer 1: 2-5 agents bundled together
+    WORKFLOW = "workflow"  # Layer 2: Complete business solutions (5-15 agents)
+    PLATFORM = "platform"  # Layer 3: Full business systems (20-50+ agents)
+    ECOSYSTEM = "ecosystem"  # Layer 4: Multi-platform networks (100+ agents)
 
 
 class ListingStatus(str, enum.Enum):
