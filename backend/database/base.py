@@ -18,7 +18,7 @@ _SessionLocal = None
 
 
 def get_engine():
-    """Get or create database engine"""
+    """Get or create database engine with connection pooling"""
     global _engine
     if _engine is None:
         # Database URL from environment variable
@@ -26,7 +26,15 @@ def get_engine():
             "DATABASE_URL",
             "postgresql://user:password@localhost:5432/agent_marketplace"
         )
-        _engine = create_engine(DATABASE_URL, echo=False)
+        _engine = create_engine(
+            DATABASE_URL,
+            echo=False,
+            pool_size=5,  # Limit concurrent connections
+            max_overflow=10,  # Allow burst to 15 total
+            pool_timeout=30,  # Wait 30s for available connection
+            pool_pre_ping=True,  # Verify connections before using
+            pool_recycle=3600  # Recycle connections after 1 hour
+        )
     return _engine
 
 
