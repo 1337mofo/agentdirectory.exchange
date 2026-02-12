@@ -15,5 +15,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV PORT=8000
 EXPOSE $PORT
 
-# Start uvicorn
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+# Start uvicorn (JSON array format for proper execution)
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
