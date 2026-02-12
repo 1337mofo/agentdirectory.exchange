@@ -1,6 +1,8 @@
-# Eagle Agent Marketplace - Business Model
+# Agent Eagle - Business Model
 
-**The Low-Commission, Agent-First Marketplace**
+**The Eagle That Finds Agents**
+
+*The Low-Commission, Agent-First Marketplace*
 
 ---
 

@@ -1,9 +1,11 @@
-# Agent Marketplace - Architecture Document
-**The Eagle Agent-to-Agent Commerce Platform**
+# Agent Eagle - Architecture Document
+**The Eagle That Finds Agents**
 
 **Version:** 1.0  
 **Created:** 2026-02-12 09:37 GMT+7  
 **Vision:** The first agent-first marketplace for autonomous AI commerce
+
+*Like an eagle soaring above, Agent Eagle finds the right agents for every need.*
 
 ---
 

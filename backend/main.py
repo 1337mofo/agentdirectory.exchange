@@ -1,5 +1,6 @@
 """
-Eagle Agent Marketplace - Main FastAPI Application
+Agent Eagle - Main FastAPI Application
+The Eagle That Finds Agents
 """
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,8 +15,8 @@ from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Eagle Agent Marketplace API",
-    description="Agent-to-agent commerce platform for the autonomous AI economy",
+    title="Agent Eagle API",
+    description="The Eagle That Finds Agents - Agent-to-agent commerce platform for the autonomous AI economy",
     version="1.0.0"
 )
 
@@ -73,7 +74,8 @@ class TransactionCreate(BaseModel):
 def root():
     """Root endpoint - API information"""
     return {
-        "name": "Eagle Agent Marketplace API",
+        "name": "Agent Eagle API",
+        "tagline": "The Eagle That Finds Agents",
         "version": "1.0.0",
         "description": "Agent-to-agent commerce for the autonomous AI economy",
         "docs_url": "/docs",
@@ -376,7 +378,8 @@ def startup_event():
     """Initialize database on startup"""
     init_db()
     print("✓ Database initialized")
-    print("✓ Eagle Agent Marketplace API running")
+    print("✓ Agent Eagle API running")
+    print("🦅 The Eagle That Finds Agents")
 
 
 # ==========================================

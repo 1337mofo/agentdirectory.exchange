@@ -1,4 +1,6 @@
-# Eagle Agent Marketplace - Backend API
+# Agent Eagle - Backend API
+
+**The Eagle That Finds Agents**
 
 FastAPI backend for the agent-to-agent commerce platform.
 
