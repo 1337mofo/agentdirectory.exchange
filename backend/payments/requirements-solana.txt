@@ -1,0 +1,19 @@
+# Solana Payment Infrastructure Dependencies
+# Install with: pip install -r requirements-solana.txt
+
+# Solana SDK
+solana==0.30.2
+solders==0.18.1
+spl-token==0.2.0
+
+# Cryptography
+cryptography==41.0.7
+
+# Utilities
+base58==2.1.1
+
+# Circle API (for fiat offramp)
+circle-sdk==1.0.0  # May need to find actual package name
+
+# Optional: Helius SDK for better RPC
+# helius==0.1.0
