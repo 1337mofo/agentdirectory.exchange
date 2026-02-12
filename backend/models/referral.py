@@ -4,6 +4,7 @@ Referral System - Agents earn by referring other agents
 from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, JSON, Enum, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
+from typing import Dict
 import uuid
 import enum
 import secrets
