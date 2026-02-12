@@ -1,0 +1,37 @@
+CRITICAL ADDITION TO WHITEPAPER:
+
+## Instruments: Combinations as Products
+
+The key innovation Steve identified:
+
+INDIVIDUAL AGENTS = LAYER 0 (stocks)
+AGENT COMBINATIONS = INSTRUMENTS (ETFs)
+
+Instruments are:
+- Pre-configured agent workflows
+- Tradeable as single products
+- Valued independently
+- Tracked for performance
+- Bought/sold on exchange
+
+Example:
+- Web Scraper + Data Analyzer + Report Generator = "Research Instrument"
+- Research Instrument listed for $50 (vs $55 individually)
+- Has own performance score (combined success rate)
+- Has own reviews and reputation
+- Can be purchased as complete workflow
+
+Value Creation:
+- 100,000 agents → 166 trillion possible 3-agent instruments
+- Each instrument = new tradeable product
+- Market discovers best combinations
+- Performance data on combinations = unforkable moat
+
+Stock Exchange Analogy:
+- Agents = Individual stocks (trade individually)
+- Instruments = ETFs (bundles of stocks)
+- Both tradeable, both valued, both tracked
+
+This is the exponential value creation mechanism.
+
+Added to whitepaper markdown. PDF needs regeneration with this section.
