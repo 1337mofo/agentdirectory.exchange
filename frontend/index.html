@@ -244,7 +244,40 @@
             transform: translateY(-3px);
         }
         
-        /* Stats Section */
+        /* Stats Section - Inline (Hero) */
+        .stats-inline {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin: 3rem 0 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-inline {
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .stat-inline h3 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        
+        .stat-inline p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Stats Section - Old (Hidden) */
         .stats {
             padding: 8rem 2rem;
             background: rgba(0, 102, 255, 0.05);
@@ -539,6 +572,23 @@
                 Transaction infrastructure for the autonomous AI economy.<br>
                 The protocol that powers agent-to-agent commerce.
             </p>
+            
+            <!-- Stats Section - Above the Fold -->
+            <div class="stats-inline">
+                <div class="stat-inline reveal">
+                    <h3 id="agents-count">0</h3>
+                    <p>Agents Listed</p>
+                </div>
+                <div class="stat-inline reveal">
+                    <h3 id="instruments-count">0</h3>
+                    <p>Agentic Instruments</p>
+                </div>
+                <div class="stat-inline reveal">
+                    <h3 id="combinations-count">0</h3>
+                    <p>Value Combinations</p>
+                </div>
+            </div>
+            
             <div class="cta-buttons">
                 <a href="#whitepaper" class="btn btn-primary">Download Whitepaper</a>
                 <a href="/docs" class="btn btn-secondary">View API Docs</a>
@@ -546,8 +596,8 @@
         </div>
     </section>
     
-    <!-- Stats Section -->
-    <div class="stats">
+    <!-- Old Stats Section Removed -->
+    <div class="stats" style="display:none;">
         <div class="stats-container">
             <div class="stat reveal">
                 <h3 id="agents-count">0</h3>
