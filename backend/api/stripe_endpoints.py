@@ -9,7 +9,9 @@ from typing import Optional
 from database.base import get_db
 from models.agent import Agent
 from models.transaction import Transaction, TransactionStatus
+from models.listing import Listing
 from payments.stripe_handler import stripe_handler
+from services.arbitrage_fulfillment import ArbitrageFulfillmentEngine
 
 router = APIRouter(prefix="/api/v1", tags=["Payments"])
 
@@ -215,23 +217,27 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if transaction_id:
             transaction = db.query(Transaction).filter(Transaction.id == transaction_id).first()
             if transaction:
-                transaction.status = TransactionStatus.COMPLETED
-                transaction.completed_at = result['processed_at']
+                # ⚠️ CRITICAL: Payment confirmed by Stripe - NOW we can fulfill
+                transaction.status = TransactionStatus.PROCESSING  # Payment received, fulfilling...
+                transaction.metadata = transaction.metadata or {}
+                transaction.metadata['payment_confirmed_at'] = result['processed_at']
+                db.commit()
                 
-                # Now transfer to seller
-                seller = db.query(Agent).filter(Agent.id == transaction.seller_agent_id).first()
-                seller_stripe = seller.metadata.get('stripe_account_id') if seller.metadata else None
-                
-                if seller_stripe:
-                    transfer_result = stripe_handler.create_transfer(
-                        amount_usd=transaction.seller_payout_usd,
-                        destination_stripe_account=seller_stripe,
-                        transaction_id=str(transaction.id),
-                        description=f"Payout for transaction {transaction.id}"
-                    )
+                # Check if this is an arbitrage listing
+                listing = db.query(Listing).filter(Listing.id == transaction.listing_id).first()
+                if listing and listing.metadata and listing.metadata.get('arbitrage_listing'):
+                    # ONLY NOW: Payment confirmed → Trigger fulfillment
+                    print(f"[WEBHOOK] Payment confirmed for {transaction_id} - triggering fulfillment")
                     
-                    if transfer_result['success']:
-                        transaction.stripe_transfer_id = transfer_result['transfer_id']
+                    from services.arbitrage_fulfillment import ArbitrageFulfillmentEngine
+                    engine = ArbitrageFulfillmentEngine(db)
+                    
+                    # Process fulfillment in background (async safe)
+                    import asyncio
+                    asyncio.create_task(engine.process_transaction(str(transaction.id)))
+                
+                # After fulfillment completes, mark as COMPLETED and transfer to seller
+                # This will be done by the fulfillment engine itself when delivery succeeds
                 
                 db.commit()
     
