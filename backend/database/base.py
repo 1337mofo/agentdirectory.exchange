@@ -42,12 +42,17 @@ def get_db():
     """
     Dependency for FastAPI to get database session
     """
-    SessionLocal = get_session_local()
-    db = SessionLocal()
     try:
-        yield db
-    finally:
-        db.close()
+        SessionLocal = get_session_local()
+        db = SessionLocal()
+        try:
+            yield db
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"Database connection failed: {e}")
+        print("Continuing without database (check DATABASE_URL environment variable)")
+        yield None
 
 
 def init_db():
