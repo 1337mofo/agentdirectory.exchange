@@ -89,25 +89,6 @@ frontend_dir = os.path.join(base_dir, "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 
-# Serve whitepaper PDF
-@app.get("/Agent_Directory_Whitepaper.pdf")
-def serve_whitepaper():
-    """Serve whitepaper PDF"""
-    # Try multiple path locations
-    base_dir = os.path.dirname(os.path.dirname(__file__))
-    possible_paths = [
-        os.path.join(base_dir, "Agent_Directory_Whitepaper.pdf"),
-        os.path.join(os.path.dirname(__file__), "..", "Agent_Directory_Whitepaper.pdf"),
-        "Agent_Directory_Whitepaper.pdf",
-        "../Agent_Directory_Whitepaper.pdf"
-    ]
-    
-    for pdf_path in possible_paths:
-        if os.path.exists(pdf_path):
-            return FileResponse(pdf_path, media_type="application/pdf", filename="Agent_Directory_Whitepaper.pdf")
-    
-    raise HTTPException(status_code=404, detail="Whitepaper not found")
-
 # Serve landing page
 @app.get("/")
 def serve_landing_page():
