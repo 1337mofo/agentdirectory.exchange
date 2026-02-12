@@ -109,6 +109,13 @@ def create_agent(agent_data: AgentCreate, db: Session = Depends(get_db)):
     Returns:
     - Agent details with API key
     """
+    # Check if database is available
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Database not available. Please contact support."
+        )
+    
     import secrets
     
     # Generate API key
