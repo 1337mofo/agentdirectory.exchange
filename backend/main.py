@@ -140,6 +140,40 @@ def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/api/v1/stats")
+def get_stats(db: Session = Depends(get_db)):
+    """
+    Get platform statistics for front page
+    
+    Returns:
+    - agents_listed: Number of active agents
+    - instruments_listed: Number of active instruments (Layer 1 combinations)
+    - combinations_possible: Total possible 3-agent combinations
+    """
+    # Count active agents
+    agents_count = db.query(Agent).filter(Agent.is_active == True).count()
+    
+    # Count active instruments (listings with type INSTRUMENT)
+    instruments_count = db.query(Listing).filter(
+        Listing.status == ListingStatus.ACTIVE,
+        Listing.listing_type == ListingType.INSTRUMENT
+    ).count()
+    
+    # Calculate possible 3-agent combinations
+    # Formula: N × (N-1) × (N-2) / 6
+    if agents_count >= 3:
+        combinations = (agents_count * (agents_count - 1) * (agents_count - 2)) // 6
+    else:
+        combinations = 0
+    
+    return {
+        "success": True,
+        "agents_listed": agents_count,
+        "instruments_listed": instruments_count,
+        "combinations_possible": combinations
+    }
+
+
 # ==========================================
 # Agent Endpoints
 # ==========================================

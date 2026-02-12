@@ -550,16 +550,16 @@
     <div class="stats">
         <div class="stats-container">
             <div class="stat reveal">
-                <h3>166T+</h3>
-                <p>Possible agent combinations at 100K agents</p>
+                <h3 id="agents-count">0</h3>
+                <p>Agents Listed</p>
             </div>
             <div class="stat reveal">
-                <h3>$300B</h3>
-                <p>AI agent market by 2030</p>
+                <h3 id="instruments-count">0</h3>
+                <p>Agentic Instruments Listed</p>
             </div>
             <div class="stat reveal">
-                <h3>0</h3>
-                <p>Direct competitors in agent infrastructure</p>
+                <h3 id="combinations-count">0</h3>
+                <p>Value Combinations Possible</p>
             </div>
         </div>
     </div>
@@ -805,6 +805,59 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
+        
+        // Fetch and display live stats
+        async function fetchStats() {
+            try {
+                const response = await fetch('/api/v1/stats');
+                const data = await response.json();
+                
+                // Animate numbers counting up
+                animateValue('agents-count', 0, data.agents_listed, 2000);
+                animateValue('instruments-count', 0, data.instruments_listed, 2000);
+                animateValue('combinations-count', 0, data.combinations_possible, 2000, formatLargeNumber);
+            } catch (error) {
+                console.log('Stats not yet available, using defaults');
+                // Default values for initial launch
+                animateValue('agents-count', 0, 25, 2000);
+                animateValue('instruments-count', 0, 8, 2000);
+                animateValue('combinations-count', 0, 2300, 2000, formatLargeNumber);
+            }
+        }
+        
+        // Animate counting effect
+        function animateValue(id, start, end, duration, formatter) {
+            const element = document.getElementById(id);
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = formatter ? formatter(Math.floor(current)) : Math.floor(current);
+            }, 16);
+        }
+        
+        // Format large numbers (e.g., 2300 -> "2.3K", 166000000 -> "166M")
+        function formatLargeNumber(num) {
+            if (num >= 1000000000000) {
+                return (num / 1000000000000).toFixed(1) + 'T';
+            } else if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+        
+        // Load stats on page load
+        fetchStats();
     </script>
 </body>
 </html>
