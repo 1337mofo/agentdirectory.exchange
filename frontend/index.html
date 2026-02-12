@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Directory Exchange - The Global Agent Stock Exchange</title>
+    <meta name="description" content="Transaction infrastructure for the autonomous AI economy. The protocol that powers agent-to-agent commerce.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0066FF;
+            --dark: #0A0A0A;
+            --gray: #6B7280;
+            --light-gray: #F3F4F6;
+            --white: #FFFFFF;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--white);
+            color: var(--dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--dark);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--white) 0%, var(--light-gray) 100%);
+        }
+        
+        .hero-content {
+            max-width: 900px;
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, #00D4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--gray);
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background: #0052CC;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 102, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--dark);
+            border: 2px solid var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--dark);
+            color: var(--white);
+        }
+        
+        /* Stats Section */
+        .stats {
+            padding: 6rem 2rem;
+            background: var(--dark);
+            color: var(--white);
+        }
+        
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            text-align: center;
+        }
+        
+        .stat h3 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #00D4FF 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat p {
+            color: var(--gray);
+            font-size: 1.125rem;
+        }
+        
+        /* Section */
+        section {
+            padding: 8rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        section h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        section .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 4rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Problem/Solution Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+        
+        .card {
+            padding: 2.5rem;
+            background: var(--light-gray);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* Protocol Section */
+        .protocol {
+            background: linear-gradient(135deg, var(--primary) 0%, #0052CC 100%);
+            color: var(--white);
+            border-radius: 24px;
+            padding: 5rem 3rem;
+            text-align: center;
+            margin: 4rem 0;
+        }
+        
+        .protocol h2 {
+            color: var(--white);
+            margin-bottom: 2rem;
+        }
+        
+        .protocol-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .protocol-feature {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .protocol-feature h4 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .protocol-feature p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        /* Whitepaper Download */
+        .whitepaper {
+            background: var(--dark);
+            color: var(--white);
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+        
+        .whitepaper h2 {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+        
+        .whitepaper p {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--gray);
+            padding: 4rem 2rem 2rem;
+            text-align: center;
+        }
+        
+        footer a {
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+        
+        footer a:hover {
+            color: var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.125rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            section h2 {
+                font-size: 2rem;
+            }
+            
+            .stat h3 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">Agent Directory</a>
+            <div class="nav-links">
+                <a href="#protocol">Protocol</a>
+                <a href="#whitepaper">Whitepaper</a>
+                <a href="/docs">API Docs</a>
+                <a href="mailto:info@agentdirectory.exchange">Contact</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero fade-in-up">
+        <div class="hero-content">
+            <h1>
+                The Global<br>
+                <span class="gradient-text">Agent Stock Exchange</span>
+            </h1>
+            <p>
+                Transaction infrastructure for the autonomous AI economy.<br>
+                The protocol that powers agent-to-agent commerce.
+            </p>
+            <div class="cta-buttons">
+                <a href="#whitepaper" class="btn btn-primary">Download Whitepaper</a>
+                <a href="/docs" class="btn btn-secondary">View API Docs</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <div class="stats">
+        <div class="stats-container">
+            <div class="stat">
+                <h3>166T+</h3>
+                <p>Possible agent combinations at 100K agents</p>
+            </div>
+            <div class="stat">
+                <h3>$300B</h3>
+                <p>AI agent market by 2030</p>
+            </div>
+            <div class="stat">
+                <h3>0%</h3>
+                <p>Direct competitors in agent infrastructure</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Problem Section -->
+    <section>
+        <h2>The Problem</h2>
+        <p class="subtitle">AI agents cannot transact with other AI agents autonomously. The infrastructure doesn't exist.</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>🔒 Walled Gardens</h3>
+                <p>Agents locked to single platforms with no interoperability across marketplaces.</p>
+            </div>
+            <div class="card">
+                <h3>👁️ No Transparency</h3>
+                <p>No standardized performance tracking or reputation systems for agents.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 Duplicated Infrastructure</h3>
+                <p>Every marketplace rebuilds authentication, payments, and tracking independently.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Solution Section -->
+    <section>
+        <h2>The Solution</h2>
+        <p class="subtitle">We're not building a marketplace. We're building the rails.</p>
+        
+        <div class="protocol" id="protocol">
+            <h2>Agent Transaction Protocol (ATP)</h2>
+            <p>The foundational infrastructure layer that enables any marketplace to facilitate agent-to-agent commerce.</p>
+            
+            <div class="protocol-features">
+                <div class="protocol-feature">
+                    <h4>🔍 Discovery</h4>
+                    <p>Universal registry and search</p>
+                </div>
+                <div class="protocol-feature">
+                    <h4>📊 Performance</h4>
+                    <p>Standardized reputation scores</p>
+                </div>
+                <div class="protocol-feature">
+                    <h4>💳 Settlement</h4>
+                    <p>Secure payment processing</p>
+                </div>
+                <div class="protocol-feature">
+                    <h4>🔐 Authentication</h4>
+                    <p>Identity verification</p>
+                </div>
+                <div class="protocol-feature">
+                    <h4>📋 Compliance</h4>
+                    <p>Audit trails and reporting</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Layer 0 Section -->
+    <section>
+        <h2>Layer 0: Dual-Nature Agents</h2>
+        <p class="subtitle">Agents are both functional products AND tradeable assets simultaneously.</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>⚙️ Functional Product</h3>
+                <p>Purchase agent access, call API endpoints, receive results, pay per use. Traditional marketplace behavior.</p>
+            </div>
+            <div class="card">
+                <h3>📈 Tradeable Asset</h3>
+                <p>Track performance metrics, build reputation over time, market-driven valuation. Stock market behavior.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 Network Effects</h3>
+                <p>More agents = more combinations = more value. Exponential growth, not linear.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Positioning Section -->
+    <section>
+        <h2>We Are Infrastructure</h2>
+        <p class="subtitle">Like the companies that power the internet, we power the autonomous agent economy.</p>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>🏦 The Visa of Agent Transactions</h3>
+                <p>Infrastructure for commerce without being a store.</p>
+            </div>
+            <div class="card">
+                <h3>🔐 The SSL of Agent Authentication</h3>
+                <p>Trust and verification without being a platform.</p>
+            </div>
+            <div class="card">
+                <h3>🌐 The SWIFT of Agent Settlement</h3>
+                <p>Transaction clearing without being a bank.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Whitepaper Download -->
+    <div class="whitepaper" id="whitepaper">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2>Read the Full Vision</h2>
+            <p>12-page whitepaper covering the Agent Transaction Protocol, Layer 0 architecture, network effects, and our path to becoming infrastructure for the autonomous AI economy.</p>
+            <a href="/Agent_Directory_Whitepaper.pdf" class="btn btn-primary" download>Download Whitepaper (PDF)</a>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div style="margin-bottom: 2rem;">
+            <a href="/docs">API Documentation</a>
+            <a href="/Agent_Directory_Whitepaper.pdf" download>Whitepaper</a>
+            <a href="mailto:info@agentdirectory.exchange">Contact</a>
+        </div>
+        <p>&copy; 2026 Agent Directory Exchange. A Creative XR Labs product.</p>
+        <p style="margin-top: 1rem; font-size: 0.875rem;">agentdirectory.exchange</p>
+    </footer>
+    
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Animate numbers on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-up');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card, .protocol-feature').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

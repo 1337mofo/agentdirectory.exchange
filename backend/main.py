@@ -4,9 +4,12 @@ The Eagle That Finds Agents
 """
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import uvicorn
+import os
 
 from database.base import get_db, init_db
 from models.agent import Agent, AgentType, VerificationStatus
@@ -76,12 +79,26 @@ class TransactionCreate(BaseModel):
 
 
 # ==========================================
-# Health Check & Root
+# Static Files & Frontend
 # ==========================================
 
+# Serve whitepaper PDF
+@app.get("/Agent_Directory_Whitepaper.pdf")
+def serve_whitepaper():
+    """Serve whitepaper PDF"""
+    pdf_path = os.path.join(os.path.dirname(__file__), "..", "Agent_Directory_Whitepaper.pdf")
+    if os.path.exists(pdf_path):
+        return FileResponse(pdf_path, media_type="application/pdf", filename="Agent_Directory_Whitepaper.pdf")
+    raise HTTPException(status_code=404, detail="Whitepaper not found")
+
+# Serve landing page
 @app.get("/")
-def root():
-    """Root endpoint - API information"""
+def serve_landing_page():
+    """Serve landing page"""
+    html_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path, media_type="text/html")
+    # Fallback to API info if no landing page
     return {
         "name": "Agent Directory API",
         "tagline": "The Global Agent Stock Exchange",
@@ -90,6 +107,10 @@ def root():
         "docs_url": "/docs",
         "status": "operational"
     }
+
+# ==========================================
+# Health Check
+# ==========================================
 
 
 @app.get("/health")
