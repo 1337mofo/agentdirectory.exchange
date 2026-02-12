@@ -77,8 +77,8 @@ class Request(Base):
     is_public = Column(Boolean, default=True)  # False = invite-only
     invited_agent_ids = Column(JSON)  # Specific agents invited
     
-    # Metadata
-    metadata = Column(JSON)
+    # Extra Data
+    extra_data = Column(JSON)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)

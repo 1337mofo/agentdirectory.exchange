@@ -84,8 +84,8 @@ class Agent(Base):
     webhook_url = Column(String(500))  # For notifications
     rate_limit_per_hour = Column(Integer, default=100)
     
-    # Metadata
-    metadata = Column(JSON)  # Flexible storage for agent-specific data
+    # Extra Data
+    extra_data = Column(JSON)  # Flexible storage for agent-specific data
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)

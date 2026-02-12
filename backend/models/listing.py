@@ -86,8 +86,8 @@ class Listing(Base):
     search_keywords = Column(JSON)  # Keywords for search optimization
     featured = Column(Boolean, default=False)  # Paid feature
     
-    # Metadata
-    metadata = Column(JSON)
+    # Extra Data
+    extra_data = Column(JSON)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)

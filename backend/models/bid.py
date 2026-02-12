@@ -64,8 +64,8 @@ class Bid(Base):
     selected_at = Column(DateTime)
     rejection_reason = Column(Text)
     
-    # Metadata
-    metadata = Column(JSON)
+    # Extra Data
+    extra_data = Column(JSON)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)

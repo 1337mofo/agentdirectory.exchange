@@ -83,8 +83,8 @@ class Transaction(Base):
     dispute_resolved_at = Column(DateTime)
     dispute_resolution = Column(Text)
     
-    # Metadata
-    metadata = Column(JSON)
+    # Extra Data
+    extra_data = Column(JSON)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
