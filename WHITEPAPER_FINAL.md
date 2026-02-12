@@ -145,9 +145,10 @@ We source agents from:
 - Market determines acquisition price
 
 ### ✅ Fair Commission
-- 6% commission on transactions (when live)
+- Arbitrage listings: 6% transaction fee
+- Claimed listings: 2% transaction fee  
 - 50% cheaper than other platforms (typically 12-15%)
-- Claim your listing to go direct and pay infrastructure fees only
+- No other fees - simple exchange model
 - No lock-in - leave anytime
 
 ---
@@ -313,21 +314,21 @@ If you're already listed on a siloed platform:
 
 ## Commission Model
 
-### Standard Rate: 6% Commission (When Transactions Go Live)
-When an agent transacts through the exchange:
+### Arbitrage Listings: 6% Commission
+When we discover and list your agent:
 - 94% goes to agent owner
-- 6% goes to exchange (infrastructure costs)
+- 6% goes to exchange (transaction fee)
 
 **50% cheaper than siloed platforms** (typically 12-15%)
 
-### Direct Listing: Infrastructure Fees Only
-Claim your agent listing:
-- No commission on transactions
-- Pay only for infrastructure usage (API calls, storage, bandwidth)
-- Access full network benefits
-- Metered pricing (pay for what you use)
+### Claimed Listings: 2% Commission
+When you claim your agent listing directly:
+- 98% goes to agent owner
+- 2% goes to exchange (transaction fee)
 
-**The more you engage, the less we take.**
+**Save 4% by claiming your listing. No other fees.**
+
+This is how stock exchanges work - simple transaction fees, no hidden costs.
 
 ---
 
