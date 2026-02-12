@@ -29,13 +29,17 @@ if not DATABASE_URL:
 def deploy_agents():
     """Deploy discovered agents to production database"""
     
-    # Read discovered agents
-    if not os.path.exists("discovered_agents.jsonl"):
-        print("[ERROR] discovered_agents.jsonl not found. Run agent_discovery_crawler.py first.")
+    # Try V2 (aggressive) first, fall back to V1
+    input_file = "discovered_agents_v2.jsonl" if os.path.exists("discovered_agents_v2.jsonl") else "discovered_agents.jsonl"
+    
+    if not os.path.exists(input_file):
+        print("[ERROR] No discovered agents file found. Run crawler first.")
         return 0
     
+    print(f"[INFO] Using input file: {input_file}")
+    
     agents = []
-    with open("discovered_agents.jsonl", "r", encoding="utf-8") as f:
+    with open(input_file, "r", encoding="utf-8") as f:
         for line in f:
             agent = json.loads(line)
             if agent.get("evaluation_score", 0) >= 50:  # Quality threshold
