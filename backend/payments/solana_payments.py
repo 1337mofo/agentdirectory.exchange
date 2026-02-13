@@ -4,12 +4,14 @@ Handles USDC transfers between exchange treasury and agent wallets
 """
 
 from solana.rpc.api import Client
-from solana.transaction import Transaction
+from solders.transaction import Transaction
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
-from solders.system_program import TransferParams, transfer
-from spl.token.instructions import transfer_checked, TransferCheckedParams, get_associated_token_address
-from spl.token.constants import TOKEN_PROGRAM_ID
+from solders.system_program import transfer, TransferParams
+from solders.message import Message
+from solders.hash import Hash
+from anchorpy import Provider
+import base58
 import os
 import time
 

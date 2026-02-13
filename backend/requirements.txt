@@ -1,4 +1,5 @@
 # Eagle Agent Marketplace - Backend Dependencies
+# Last updated: 2026-02-13 12:40 GMT+7 - Force rebuild for base58 dependency
 
 # Web Framework
 fastapi==0.109.0

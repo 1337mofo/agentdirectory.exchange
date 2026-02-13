@@ -3,6 +3,11 @@ Run submission fields migration on Railway PostgreSQL
 """
 import psycopg2
 import os
+import sys
+
+# Set UTF-8 encoding for console output on Windows
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Railway PostgreSQL connection
 DATABASE_URL = "postgresql://postgres:UhWTsyEJSTIrWVJyyCggOqoglwoIepue@yamabiko.proxy.rlwy.net:29306/railway"

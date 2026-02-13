@@ -8,7 +8,7 @@ COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 COPY Agent_Directory_Whitepaper.pdf ./
 
-# Install Python dependencies
+# Install Python dependencies (Updated 2026-02-13 12:42 GMT+7)
 WORKDIR /app/backend
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
