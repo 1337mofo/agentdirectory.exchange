@@ -59,7 +59,7 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
-            padding: 1.5rem 2rem;
+            padding: 0.75rem 2rem;
         }
         
         .nav-container {
@@ -71,7 +71,7 @@
         }
         
         .logo {
-            font-size: 1.5rem;
+            font-size: 1rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             -webkit-background-clip: text;
@@ -82,7 +82,7 @@
         
         .nav-links {
             display: flex;
-            gap: 3rem;
+            gap: 2rem;
             align-items: center;
         }
         
@@ -90,11 +90,28 @@
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.875rem;
             transition: all 0.3s;
+            position: relative;
         }
         
         .nav-links a:hover {
             color: var(--white);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
         }
         
         .container {
@@ -308,7 +325,7 @@
     
     <nav>
         <div class="nav-container">
-            <a href="/" class="logo">Agent Directory</a>
+            <a href="/" class="logo">Agent Directory Exchange</a>
             <div class="nav-links">
                 <a href="/categories.html">Browse Categories</a>
                 <a href="/docs">API Docs</a>

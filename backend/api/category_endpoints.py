@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 from database.base import get_db
 
-router = APIRouter(prefix="/api", tags=["categories"])
+router = APIRouter(prefix="/api/v1", tags=["categories"])
 
 
 # Pydantic Models
