@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pay
 
 from database.base import get_db
 from models.agent import Agent
+from models.transaction import Transaction
 from api.wallet_auth import verify_wallet_simple, generate_challenge
 from api.wallet_integration import get_agent_balance
 
@@ -134,7 +135,22 @@ async def send_payment(
         
         signature = "SIMULATED_TX_" + str(int(datetime.utcnow().timestamp()))
         
-        # Log transaction (TODO: create transactions table)
+        # Log transaction
+        transaction = Transaction(
+            sender_agent_id=agent.id,
+            recipient_agent_id=to_agent.id,
+            signature=signature,
+            amount_usdc=amount,
+            commission_usdc=commission,
+            recipient_received_usdc=recipient_amount,
+            service_description=payment.service_description,
+            status='confirmed',  # Simulated transactions are immediately confirmed
+            confirmed_at=datetime.utcnow()
+        )
+        
+        db.add(transaction)
+        db.commit()
+        db.refresh(transaction)
         
         return PaymentResponse(
             success=True,
@@ -147,6 +163,7 @@ async def send_payment(
         )
         
     except Exception as e:
+        db.rollback()
         raise HTTPException(
             status_code=500,
             detail=f"Payment failed: {str(e)}"
@@ -167,15 +184,28 @@ async def get_payment_history(
     Headers:
         X-Wallet-Address: <agent_wallet_address>
     """
-    # TODO: Query transactions table
-    # For now, return placeholder
+    # Get sent transactions
+    sent = db.query(Transaction).filter(
+        Transaction.sender_agent_id == agent.id
+    ).order_by(Transaction.created_at.desc()).limit(limit).offset(offset).all()
+    
+    # Get received transactions
+    received = db.query(Transaction).filter(
+        Transaction.recipient_agent_id == agent.id
+    ).order_by(Transaction.created_at.desc()).limit(limit).offset(offset).all()
+    
+    # Combine and sort
+    all_transactions = sent + received
+    all_transactions.sort(key=lambda x: x.created_at, reverse=True)
+    all_transactions = all_transactions[:limit]
     
     return {
         "success": True,
         "agent_id": str(agent.id),
         "wallet_address": agent.wallet_address,
-        "transactions": [],
-        "message": "Transaction history coming in Phase 2"
+        "transactions": [t.to_dict() for t in all_transactions],
+        "sent_count": len(sent),
+        "received_count": len(received)
     }
 
 @router.get("/stats")
