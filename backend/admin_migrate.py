@@ -5,7 +5,7 @@ Allows running database migrations via HTTP POST with admin API key
 from fastapi import APIRouter, Header, HTTPException
 import os
 from sqlalchemy import text
-from database.base import get_db_engine
+from database.base import get_engine
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -25,7 +25,7 @@ async def run_migrations(authorization: str = Header(None)):
     if api_key != ADMIN_API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API key")
     
-    engine = get_db_engine()
+    engine = get_engine()
     results = []
     
     try:
