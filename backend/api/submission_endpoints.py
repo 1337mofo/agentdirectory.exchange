@@ -11,21 +11,26 @@ from datetime import datetime
 from database.base import get_db
 from models.agent import Agent
 
-router = APIRouter(prefix="/api/v1/agents", tags=["submissions"])
+router = APIRouter(prefix="/api/v1/submissions", tags=["submissions"])
+
+
+class PricingModel(BaseModel):
+    """Pricing information"""
+    model: str = Field(..., description="per_request, per_token, subscription, etc.")
+    price_usd: float = Field(..., ge=0, description="Price in USD")
 
 
 class AgentSubmission(BaseModel):
     """Public agent submission schema"""
     name: str = Field(..., min_length=1, max_length=255)
-    description: str = Field(..., min_length=10, max_length=1000)
-    source_url: str = Field(..., min_length=1, max_length=500)
-    agent_type: str = Field(..., min_length=1, max_length=100)
-    categories: Optional[str] = None
-    owner_email: EmailStr
-    api_endpoint: Optional[str] = None
-    submission_source: str = "web_form"
+    description: str = Field(..., min_length=10, max_length=2000)
+    website: str = Field(..., min_length=1, max_length=500, description="GitHub, HuggingFace, or website URL")
+    email: EmailStr = Field(..., description="Contact email")
+    api_endpoint: Optional[str] = Field(None, max_length=500)
+    capabilities: list = Field(..., min_items=1, description="List of agent capabilities")
+    pricing: PricingModel
     
-    @validator('source_url', 'api_endpoint')
+    @validator('website', 'api_endpoint')
     def validate_url(cls, v):
         if v and not (v.startswith('http://') or v.startswith('https://')):
             raise ValueError('URL must start with http:// or https://')
@@ -59,29 +64,36 @@ async def submit_agent_for_review(
         # Create agent record with pending status
         agent_id = str(uuid.uuid4())
         
-        # Parse categories
-        categories_list = []
-        if submission.categories:
-            categories_list = [cat.strip() for cat in submission.categories.split(',')]
+        # Convert agent_type from pricing model if needed
+        from models.agent import AgentType
+        agent_type_enum = AgentType.API  # Default for submitted agents
+        
+        # Create pricing JSON
+        pricing_data = {
+            "model": submission.pricing.model,
+            "price_usd": submission.pricing.price_usd
+        }
         
         # Create agent in database (inactive, pending review)
         new_agent = Agent(
             id=agent_id,
             name=submission.name,
             description=submission.description,
-            source_url=submission.source_url,
-            owner_email=submission.owner_email,
+            source_url=submission.website,
+            owner_email=submission.email,
             api_endpoint=submission.api_endpoint,
+            capabilities=submission.capabilities,
+            pricing_model=pricing_data,
             # Status fields
             is_active=False,  # Not active until approved
             verified=False,
             pending_review=True,
-            submission_source=submission.submission_source,
+            submission_source="web_form",
             # Metadata
-            agent_type=submission.agent_type,
-            categories=categories_list if categories_list else None,
+            agent_type=agent_type_enum,
+            categories=None,  # Will be assigned during review
             auto_discovered=False,
-            quality_score=0,  # Will be evaluated during review
+            quality_score=70,  # Default quality score for manual submissions
             created_at=datetime.utcnow()
         )
         
@@ -94,7 +106,7 @@ async def submit_agent_for_review(
         
         return AgentSubmissionResponse(
             success=True,
-            message="Agent submitted successfully! We'll review it within 24 hours and contact you at the email provided.",
+            message="Agent submitted successfully! We'll review it within 24-48 hours and contact you at the email provided.",
             submission_id=agent_id
         )
         
