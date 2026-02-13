@@ -465,7 +465,7 @@
         
         .ticker-track {
             display: flex;
-            animation: scroll 120s linear infinite;
+            animation: scroll 40s linear infinite;
             white-space: nowrap;
         }
         
@@ -614,6 +614,13 @@
         </div>
     </nav>
     
+    <!-- Agent Ticker (Top of Page) -->
+    <div class="ticker-container" style="margin-top: 80px;">
+        <div class="ticker-track" id="ticker-track">
+            <!-- Agents will be dynamically loaded here -->
+        </div>
+    </div>
+    
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
@@ -664,13 +671,6 @@
                 <h3 id="combinations-count">0</h3>
                 <p>Value Combinations Possible</p>
             </div>
-        </div>
-    </div>
-    
-    <!-- Agent Ticker -->
-    <div class="ticker-container">
-        <div class="ticker-track" id="ticker-track">
-            <!-- Agents will be dynamically loaded here -->
         </div>
     </div>
     
