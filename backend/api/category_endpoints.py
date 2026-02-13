@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text, func, and_
 from typing import List, Optional
 from pydantic import BaseModel
+import json
 
 from database.base import get_db
 
@@ -31,9 +32,12 @@ class AgentSummary(BaseModel):
     slug: Optional[str] = None
     rating_avg: float = 0.0
     transaction_count: int = 0
-    pricing_start: Optional[float] = None
+    price_usd: Optional[float] = None
     capabilities: List[str] = []
     verified: bool = False
+    estimated_value: Optional[float] = None
+    value_ratio: Optional[float] = None
+    valuation_status: Optional[str] = None
 
 
 class CategoryDetail(BaseModel):
@@ -144,12 +148,13 @@ async def get_category(
         
         # Build agent query with filters
         sort_clause = {
+            "value": "a.value_ratio DESC NULLS LAST, a.estimated_value DESC",
             "rating": "a.rating_avg DESC, a.transaction_count DESC",
             "popularity": "a.transaction_count DESC, a.rating_avg DESC",
-            "price-low": "a.pricing_start ASC NULLS LAST, a.rating_avg DESC",
-            "price-high": "a.pricing_start DESC NULLS LAST, a.rating_avg DESC",
+            "price-low": "a.estimated_value ASC NULLS LAST",
+            "price-high": "a.estimated_value DESC NULLS LAST",
             "newest": "a.created_at DESC"
-        }.get(sort, "a.rating_avg DESC")
+        }.get(sort, "a.value_ratio DESC NULLS LAST")
         
         agents_query = text(f"""
             SELECT 
@@ -159,14 +164,16 @@ async def get_category(
                 a.slug,
                 a.rating_avg,
                 a.transaction_count,
-                a.pricing_start,
+                a.pricing_model,
                 a.capabilities,
-                a.verified
+                a.verified,
+                a.estimated_value,
+                a.value_ratio,
+                a.valuation_status
             FROM agents a
             WHERE a.primary_use_case = :slug
               AND a.is_active = true
               AND a.rating_avg >= :min_rating
-              AND (:max_price IS NULL OR a.pricing_start <= :max_price OR a.pricing_start IS NULL)
             ORDER BY {sort_clause}
             LIMIT :limit OFFSET :offset
         """)
@@ -181,6 +188,15 @@ async def get_category(
         
         agents = []
         for row in agents_result:
+            # Parse pricing_model JSON to get price_usd
+            price_usd = None
+            if row[6]:
+                try:
+                    pricing_data = json.loads(row[6]) if isinstance(row[6], str) else row[6]
+                    price_usd = float(pricing_data.get('price_usd', 0))
+                except:
+                    price_usd = None
+            
             agents.append(AgentSummary(
                 id=str(row[0]),
                 name=row[1],
@@ -188,9 +204,12 @@ async def get_category(
                 slug=row[3] or f"a/{str(row[0])[:8]}",
                 rating_avg=float(row[4]) if row[4] else 0.0,
                 transaction_count=int(row[5]) if row[5] else 0,
-                pricing_start=float(row[6]) if row[6] else None,
+                price_usd=price_usd,
                 capabilities=row[7] if row[7] else [],
-                verified=bool(row[8])
+                verified=bool(row[8]),
+                estimated_value=float(row[9]) if row[9] else None,
+                value_ratio=float(row[10]) if row[10] else None,
+                valuation_status=row[11]
             ))
         
         # Get total count

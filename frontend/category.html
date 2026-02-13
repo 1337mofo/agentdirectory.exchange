@@ -339,6 +339,7 @@
             <div class="filter-group">
                 <label>Sort by:</label>
                 <select id="sort-select">
+                    <option value="value">Best Value (Undervalued)</option>
                     <option value="rating">Highest Rated</option>
                     <option value="popularity">Most Popular</option>
                     <option value="price-low">Price: Low to High</option>
@@ -405,12 +406,38 @@
             let html = '<div class="agents-grid">';
             
             agents.forEach(agent => {
-                const price = agent.pricing_start 
-                    ? `$${agent.pricing_start.toFixed(2)}` 
+                const price = agent.price_usd 
+                    ? `$${agent.price_usd.toFixed(2)}` 
                     : 'Contact for pricing';
                 
                 const rating = agent.rating_avg || 0;
                 const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+                
+                // Valuation display
+                let valuationHtml = '';
+                if (agent.estimated_value && agent.value_ratio) {
+                    const statusEmoji = {
+                        'UNDERVALUED': '✅',
+                        'OVERVALUED': '❌',
+                        'FAIRLY VALUED': '⚖️'
+                    }[agent.valuation_status] || '';
+                    
+                    const statusColor = {
+                        'UNDERVALUED': '#00FF88',
+                        'OVERVALUED': '#FF4444',
+                        'FAIRLY VALUED': '#FFD700'
+                    }[agent.valuation_status] || '#666';
+                    
+                    valuationHtml = `
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid ${statusColor};">
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-bottom: 0.25rem;">Est. Fair Value</div>
+                            <div style="font-size: 1.1rem; font-weight: 700; color: ${statusColor};">$${agent.estimated_value.toFixed(2)}</div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 0.25rem;">
+                                ${statusEmoji} ${agent.valuation_status} (${agent.value_ratio.toFixed(1)}x)
+                            </div>
+                        </div>
+                    `;
+                }
                 
                 html += `
                     <a href="/agent/${agent.slug}" class="agent-card">
@@ -431,6 +458,7 @@
                             </div>
                         </div>
                         <div class="agent-price">${price}</div>
+                        ${valuationHtml}
                     </a>
                 `;
             });
