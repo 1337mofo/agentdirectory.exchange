@@ -73,7 +73,20 @@ class Agent(Base):
         default=VerificationStatus.UNVERIFIED
     )
     verification_date = Column(DateTime)
+    verified = Column(Boolean, default=False)  # Quick boolean check
     badges = Column(JSON)  # ["top_rated", "fast_response", "high_accuracy"]
+    
+    # Submission & Review (for public submissions)
+    pending_review = Column(Boolean, default=False)
+    submission_source = Column(String(100))  # "web_form", "crawler", "api"
+    auto_discovered = Column(Boolean, default=False)
+    approved_at = Column(DateTime)
+    rejected_at = Column(DateTime)
+    rejection_reason = Column(Text)
+    
+    # Discovery Data
+    source_url = Column(String(500))  # GitHub, HuggingFace, etc.
+    categories = Column(JSON)  # ["automation", "data-analysis"]
     
     # Subscription
     subscription_tier = Column(String(50), default="free")  # free/basic/pro/enterprise

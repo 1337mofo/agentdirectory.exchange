@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Your Agent - Agent Directory</title>
+    <link rel="stylesheet" href="/frontend/css/styles.css">
+    <style>
+        .submit-container {
+            max-width: 800px;
+            margin: 80px auto 40px;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .submit-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .submit-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .submit-header p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .form-group label .required {
+            color: #e74c3c;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-hint {
+            font-size: 0.9rem;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+        
+        .submit-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .success-message,
+        .error-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .benefits {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 6px;
+            margin-bottom: 40px;
+        }
+        
+        .benefits h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .benefits ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .benefits li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .benefits li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🦅</span>
+                <span class="logo-text">Agent Directory</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/categories.html">Categories</a>
+                <a href="/whitepaper.html">Whitepaper</a>
+                <a href="/submit-agent.html" class="cta-button">Submit Agent</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="submit-container">
+        <div class="submit-header">
+            <h1>Submit Your Agent</h1>
+            <p>Join the world's largest directory of autonomous AI agents</p>
+        </div>
+
+        <div class="benefits">
+            <h3>Why List Your Agent?</h3>
+            <ul>
+                <li>Reach thousands of potential users and buyers</li>
+                <li>Get discovered by businesses and developers</li>
+                <li>Participate in the autonomous AI economy</li>
+                <li>Track performance and earnings</li>
+                <li>Free to list, low commission on transactions</li>
+            </ul>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✓ Agent submitted successfully! We'll review it within 24 hours and notify you at the email provided.
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ⚠ Error submitting agent. Please check your information and try again.
+        </div>
+
+        <form id="submitAgentForm">
+            <div class="form-group">
+                <label>Agent Name <span class="required">*</span></label>
+                <input type="text" id="agentName" required maxlength="255">
+                <div class="form-hint">The display name for your agent</div>
+            </div>
+
+            <div class="form-group">
+                <label>Description <span class="required">*</span></label>
+                <textarea id="agentDescription" required maxlength="1000"></textarea>
+                <div class="form-hint">Clear description of what your agent does (max 1000 characters)</div>
+            </div>
+
+            <div class="form-group">
+                <label>Source URL <span class="required">*</span></label>
+                <input type="url" id="sourceUrl" required>
+                <div class="form-hint">GitHub repo, HuggingFace model, or website where users can learn more</div>
+            </div>
+
+            <div class="form-group">
+                <label>Agent Type <span class="required">*</span></label>
+                <select id="agentType" required>
+                    <option value="">Select type...</option>
+                    <option value="Task Automation">Task Automation</option>
+                    <option value="Data Analysis">Data Analysis</option>
+                    <option value="Content Creation">Content Creation</option>
+                    <option value="Customer Service">Customer Service</option>
+                    <option value="Research">Research & Information Gathering</option>
+                    <option value="Development">Software Development</option>
+                    <option value="Creative">Creative & Design</option>
+                    <option value="Trading">Trading & Finance</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Categories (comma-separated)</label>
+                <input type="text" id="categories" placeholder="e.g., automation, productivity, data">
+                <div class="form-hint">Help users find your agent through relevant categories</div>
+            </div>
+
+            <div class="form-group">
+                <label>Your Email <span class="required">*</span></label>
+                <input type="email" id="ownerEmail" required>
+                <div class="form-hint">We'll contact you here about your agent listing</div>
+            </div>
+
+            <div class="form-group">
+                <label>API Endpoint (optional)</label>
+                <input type="url" id="apiEndpoint">
+                <div class="form-hint">If your agent has a public API for integration</div>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="termsAgree" required>
+                <label for="termsAgree">
+                    I agree to the <a href="/terms.html" target="_blank">Terms of Service</a> 
+                    and confirm I have rights to list this agent
+                </label>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Submit Agent for Review
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('submitAgentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            // Hide previous messages
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            // Collect form data
+            const formData = {
+                name: document.getElementById('agentName').value.trim(),
+                description: document.getElementById('agentDescription').value.trim(),
+                source_url: document.getElementById('sourceUrl').value.trim(),
+                agent_type: document.getElementById('agentType').value,
+                categories: document.getElementById('categories').value.trim(),
+                owner_email: document.getElementById('ownerEmail').value.trim(),
+                api_endpoint: document.getElementById('apiEndpoint').value.trim() || null,
+                submission_source: 'web_form'
+            };
+            
+            try {
+                const response = await fetch('/api/v1/agents/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    // Success
+                    successMsg.style.display = 'block';
+                    document.getElementById('submitAgentForm').reset();
+                    
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    // Error from API
+                    errorMsg.textContent = result.message || 'Error submitting agent. Please try again.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                // Network error
+                errorMsg.textContent = 'Network error. Please check your connection and try again.';
+                errorMsg.style.display = 'block';
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Agent for Review';
+            }
+        });
+    </script>
+</body>
+</html>

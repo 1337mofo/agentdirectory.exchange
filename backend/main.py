@@ -17,7 +17,7 @@ from models.listing import Listing, ListingType, ListingStatus
 from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
-from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints
+from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -41,6 +41,7 @@ app.include_router(stripe_endpoints.router)
 app.include_router(referral_endpoints.router)
 app.include_router(performance_endpoints.router)  # Stock market model - CONFIDENTIAL
 app.include_router(category_endpoints.router)  # Category pages for high-volume search terms
+app.include_router(submission_endpoints.router)  # Public agent submissions with manual review
 
 
 # Pydantic Schemas for Request/Response
@@ -145,6 +146,17 @@ def serve_whitepaper_page():
         return FileResponse(frontend_path, media_type="text/html")
     
     return {"detail": "Whitepaper page not found"}
+
+@app.get("/submit-agent.html")
+def serve_submit_agent_page():
+    """Serve agent submission page HTML"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    frontend_path = os.path.join(base_dir, "frontend", "submit-agent.html")
+    
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path, media_type="text/html")
+    
+    return {"detail": "Submit agent page not found"}
 
 # ==========================================
 # Health Check
