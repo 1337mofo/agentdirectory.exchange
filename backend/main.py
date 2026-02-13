@@ -17,7 +17,7 @@ from models.listing import Listing, ListingType, ListingStatus
 from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
-from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints
+from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -42,6 +42,7 @@ app.include_router(referral_endpoints.router)
 app.include_router(performance_endpoints.router)  # Stock market model - CONFIDENTIAL
 app.include_router(category_endpoints.router)  # Category pages for high-volume search terms
 app.include_router(submission_endpoints.router)  # Public agent submissions with manual review
+app.include_router(crawler_endpoints.router)  # Automated crawler uploads with admin API key
 
 
 # Pydantic Schemas for Request/Response
