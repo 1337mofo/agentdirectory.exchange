@@ -1,0 +1,17 @@
+# Agent Directory Exchange - Robots.txt
+# Allow all crawlers to index our site
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://agentdirectory.exchange/sitemap.xml
+
+# Crawl-delay for aggressive bots
+User-agent: *
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+User-agent: SemrushBot
+Crawl-delay: 10
