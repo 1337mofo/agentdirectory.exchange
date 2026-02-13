@@ -1,5 +1,6 @@
 # API Keys and Secrets
 ADMIN_API_KEY.txt
+RAILWAY_API_TOKEN.txt
 *.key
 *.secret
 .env
