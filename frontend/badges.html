@@ -1,0 +1,112 @@
+<!-- Payment Network Badges for Agent Directory -->
+<!-- Add to homepage hero section -->
+
+<style>
+.payment-badges {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.badge-bitcoin {
+    background: linear-gradient(135deg, #f7931a 0%, #ff6b00 100%);
+    color: white;
+}
+
+.badge-solana {
+    background: linear-gradient(135deg, #00d4aa 0%, #9945ff 100%);
+    color: white;
+}
+
+.badge-icon {
+    font-size: 1.5rem;
+}
+
+.badge-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.badge-title {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-network {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .payment-badges {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .badge {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+</style>
+
+<!-- HTML to add to homepage -->
+<div class="payment-badges">
+    <!-- Bitcoin Lightning Badge -->
+    <div class="badge badge-bitcoin">
+        <div class="badge-icon">⚡</div>
+        <div class="badge-text">
+            <span class="badge-title">Built on</span>
+            <span class="badge-network">Bitcoin</span>
+        </div>
+    </div>
+    
+    <!-- Solana Badge -->
+    <div class="badge badge-solana">
+        <div class="badge-icon">◎</div>
+        <div class="badge-text">
+            <span class="badge-title">Powered by</span>
+            <span class="badge-network">Solana</span>
+        </div>
+    </div>
+</div>
+
+<!-- Alternative: Simple text version -->
+<div style="text-align: center; margin: 20px 0; color: #666;">
+    <span style="font-size: 1.1rem; font-weight: 600;">
+        ⚡ Built on Bitcoin Lightning • ◎ Powered by Solana
+    </span>
+</div>
+
+<!-- Alternative: Icon-only version -->
+<div style="text-align: center; margin: 20px 0;">
+    <span style="font-size: 2rem;">⚡ ◎</span>
+    <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">
+        Secured by Bitcoin & Solana
+    </div>
+</div>
