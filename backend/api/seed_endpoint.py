@@ -87,7 +87,7 @@ async def seed_agents(authorization: str = Header(None)):
                 agent["name"],
                 agent["description"],
                 agent["use_case"],
-                'AUTONOMOUS',  # Default agent type
+                'hybrid',  # Default agent type (valid enum value)
                 datetime.utcnow()
             ))
             inserted += 1
