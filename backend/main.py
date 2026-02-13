@@ -189,12 +189,12 @@ def get_stats():
         conn = psycopg2.connect(DATABASE_URL)
         cur = conn.cursor()
         
-        # Count all agents (active)
-        cur.execute("SELECT COUNT(*) FROM agents WHERE is_active = true")
+        # Count all agents (simplified query - no is_active column required)
+        cur.execute("SELECT COUNT(*) FROM agents")
         agents_count = cur.fetchone()[0]
         
         # Count instruments (estimated as agents / 5 for now)
-        instruments_count = agents_count // 5
+        instruments_count = agents_count // 5 if agents_count > 0 else 0
         
         # Calculate possible 3-agent combinations
         # Formula: N × (N-1) × (N-2) / 6
