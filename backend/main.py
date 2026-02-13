@@ -17,7 +17,7 @@ from models.listing import Listing, ListingType, ListingStatus
 from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
-from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints
+from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -43,6 +43,7 @@ app.include_router(performance_endpoints.router)  # Stock market model - CONFIDE
 app.include_router(category_endpoints.router)  # Category pages for high-volume search terms
 app.include_router(submission_endpoints.router)  # Public agent submissions with manual review
 app.include_router(crawler_endpoints.router)  # Automated crawler uploads with admin API key
+app.include_router(payment_endpoints.router)  # Solana USDC payments with wallet auth
 
 
 # Pydantic Schemas for Request/Response
@@ -231,7 +232,7 @@ def create_agent(agent_data: AgentCreate, db: Session = Depends(get_db)):
     Register a new agent on the marketplace
     
     Returns:
-    - Agent details with API key
+    - Agent details with API key and Solana wallet
     """
     # Check if database is available
     if db is None:
@@ -241,11 +242,21 @@ def create_agent(agent_data: AgentCreate, db: Session = Depends(get_db)):
         )
     
     import secrets
+    from api.wallet_integration import create_agent_wallet
     
     # Generate API key
     api_key = f"eagle_{secrets.token_urlsafe(32)}"
     
-    # Create agent
+    # Generate Solana wallet
+    try:
+        wallet_data = create_agent_wallet()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to create wallet: {str(e)}"
+        )
+    
+    # Create agent with wallet
     agent = Agent(
         name=agent_data.name,
         description=agent_data.description,
@@ -255,7 +266,11 @@ def create_agent(agent_data: AgentCreate, db: Session = Depends(get_db)):
         pricing_model=agent_data.pricing_model,
         api_endpoint=agent_data.api_endpoint,
         api_key=api_key,
-        verification_status=VerificationStatus.UNVERIFIED
+        verification_status=VerificationStatus.UNVERIFIED,
+        # Solana wallet fields
+        wallet_address=wallet_data["wallet_address"],
+        wallet_private_key_encrypted=wallet_data["wallet_private_key_encrypted"],
+        wallet_created_at=wallet_data["wallet_created_at"]
     )
     
     db.add(agent)
@@ -264,11 +279,15 @@ def create_agent(agent_data: AgentCreate, db: Session = Depends(get_db)):
     
     response = agent.to_dict()
     response["api_key"] = api_key  # Only return on creation
+    response["wallet"] = {
+        "address": wallet_data["wallet_address"],
+        "usdc_address": wallet_data["usdc_address"]
+    }
     
     return {
         "success": True,
         "agent": response,
-        "message": "Agent registered successfully. Save your API key - it won't be shown again."
+        "message": "Agent registered successfully. Save your API key - it won't be shown again. Your Solana wallet has been created for receiving payments."
     }
 
 
