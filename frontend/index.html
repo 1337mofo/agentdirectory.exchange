@@ -143,7 +143,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 10rem 2rem 6rem;
+            padding: 12rem 2rem 6rem;
             position: relative;
         }
         
@@ -456,12 +456,15 @@
         .ticker-container {
             width: 100%;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(0, 212, 255, 0.3);
             border-bottom: 1px solid rgba(0, 212, 255, 0.3);
-            padding: 1rem 0;
-            position: relative;
+            padding: 0.75rem 0;
+            position: fixed;
+            top: 55px;
+            left: 0;
+            z-index: 999;
         }
         
         .ticker-track {
@@ -616,7 +619,7 @@
     </nav>
     
     <!-- Agent Ticker (Top of Page) -->
-    <div class="ticker-container" style="margin-top: 55px;">
+    <div class="ticker-container">
         <div class="ticker-track" id="ticker-track">
             <!-- Agents will be dynamically loaded here -->
         </div>
