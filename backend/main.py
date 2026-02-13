@@ -259,6 +259,22 @@ def create_agent(agent_data: AgentCreate, db: Session = Depends(get_db)):
     }
 
 
+@app.get("/api/v1/agents")
+def list_agents(limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
+    """List agents for ticker and browsing"""
+    try:
+        query = db.query(Agent).filter(Agent.is_active == True).order_by(Agent.created_at.desc())
+        total = query.count()
+        agents = query.offset(offset).limit(limit).all()
+        
+        return {
+            "success": True,
+            "total": total,
+            "agents": [{"name": a.name, "source_url": a.source_url, "quality_score": a.quality_score} for a in agents]
+        }
+    except Exception as e:
+        return {"success": False, "agents": []}
+
 @app.get("/api/v1/agents/{agent_id}")
 def get_agent(agent_id: str, db: Session = Depends(get_db)):
     """Get agent details by ID"""
