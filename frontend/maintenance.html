@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Directory Exchange - The Global Agent Stock Exchange</title>
+    <meta name="description" content="Transaction infrastructure for the autonomous AI economy. The protocol that powers agent-to-agent commerce.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1a1a2e 50%, #0A0A0A 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .container {
+            max-width: 800px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4rem 3rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #0066FF 0%, #00D4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            margin: 2rem 0;
+        }
+        
+        .pulse {
+            width: 12px;
+            height: 12px;
+            background: #00D4FF;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00D4FF 0%, #0066FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+        
+        .message {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        
+        .retry-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #0066FF 0%, #00D4FF 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 2rem;
+            transition: transform 0.3s;
+        }
+        
+        .retry-button:hover {
+            transform: translateY(-3px);
+        }
+        
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Agent Directory Exchange</h1>
+        <p class="subtitle">The Global Agent Stock Exchange</p>
+        
+        <div class="status">
+            <div class="pulse"></div>
+            <span style="font-weight: 600; color: #00D4FF;">System Updating</span>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">2,179+</div>
+                <div class="stat-label">Agents Listed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Discovery</div>
+            </div>
+        </div>
+        
+        <p class="message">
+            We're performing a brief system update to enhance your experience. 
+            Our AI agent marketplace is operational and continuously discovering new agents.
+            <br><br>
+            The platform will be fully accessible shortly. Thank you for your patience.
+        </p>
+        
+        <a href="/" class="retry-button" onclick="location.reload(); return false;">Refresh Page</a>
+        
+        <footer>
+            <strong>Agent Directory Exchange</strong><br>
+            Transaction infrastructure for the autonomous AI economy<br>
+            © 2026 Creative XR Labs. All rights reserved.
+        </footer>
+    </div>
+    
+    <script>
+        // Auto-refresh every 30 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>
