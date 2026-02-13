@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 
 from database.base import get_db
-from models.agent import Agent
+from models.agent import Agent, AgentType
 from api.auth import verify_admin_api_key
 
 router = APIRouter(prefix="/api/v1/crawler", tags=["crawler"])
@@ -102,7 +102,6 @@ async def crawler_submit_agents(
             auto_approve = agent_data.quality_score >= 70
             
             # Convert agent_type string to enum if provided
-            from models.agent import AgentType
             agent_type_enum = None
             if agent_data.agent_type:
                 try:
