@@ -124,6 +124,28 @@ def serve_categories_page():
     
     return {"detail": "Categories page not found"}
 
+@app.get("/category.html")
+def serve_category_page():
+    """Serve category detail page HTML"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    frontend_path = os.path.join(base_dir, "frontend", "category.html")
+    
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path, media_type="text/html")
+    
+    return {"detail": "Category page not found"}
+
+@app.get("/whitepaper.html")
+def serve_whitepaper_page():
+    """Serve whitepaper page HTML"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    frontend_path = os.path.join(base_dir, "frontend", "whitepaper.html")
+    
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path, media_type="text/html")
+    
+    return {"detail": "Whitepaper page not found"}
+
 # ==========================================
 # Health Check
 # ==========================================
