@@ -18,6 +18,7 @@ from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
 from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints
+import admin_migrate
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -44,6 +45,7 @@ app.include_router(category_endpoints.router)  # Category pages for high-volume 
 app.include_router(submission_endpoints.router)  # Public agent submissions with manual review
 app.include_router(crawler_endpoints.router)  # Automated crawler uploads with admin API key
 app.include_router(payment_endpoints.router)  # Solana USDC payments with wallet auth
+app.include_router(admin_migrate.router)  # Admin migration endpoint (secure with API key)
 
 
 # Pydantic Schemas for Request/Response
