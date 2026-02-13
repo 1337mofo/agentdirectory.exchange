@@ -24,7 +24,7 @@
 
 **Your Admin API Key:**
 ```
-eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+<YOUR_ADMIN_API_KEY_HERE>
 ```
 
 **Add to Railway Environment Variables:**
@@ -36,7 +36,7 @@ eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
 5. Add:
    ```
    Name: ADMIN_API_KEY
-   Value: eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+   Value: <YOUR_ADMIN_API_KEY_HERE>
    ```
 6. Click **Add**
 7. Railway will auto-redeploy with new environment variable
@@ -52,7 +52,7 @@ eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
 ```bash
 # Test API key works
 curl -X POST https://agentdirectory.exchange/api/v1/crawler/stats \
-  -H "Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg"
+  -H "Authorization: Bearer <YOUR_ADMIN_API_KEY_HERE>"
 
 # Expected response:
 {
@@ -75,12 +75,12 @@ If you get `401 Unauthorized`, the API key isn't set correctly in Railway.
 
 **Windows PowerShell:**
 ```powershell
-$env:ADMIN_API_KEY = "eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg"
+$env:ADMIN_API_KEY = "<YOUR_ADMIN_API_KEY_HERE>"
 ```
 
 **Windows CMD:**
 ```cmd
-set ADMIN_API_KEY=eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+set ADMIN_API_KEY=<YOUR_ADMIN_API_KEY_HERE>
 ```
 
 **Run the crawler:**
@@ -147,7 +147,7 @@ schtasks /create /tn "AgentDirectoryCrawler" /tr "C:\Python312\python.exe C:\Use
 
 ```batch
 @echo off
-set ADMIN_API_KEY=eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+set ADMIN_API_KEY=<YOUR_ADMIN_API_KEY_HERE>
 cd C:\Users\ADMIN\.openclaw\workspace\agentdirectory.exchange
 python crawler_with_api.py >> crawler_scheduled.log 2>&1
 ```
@@ -161,7 +161,7 @@ Then schedule the batch file instead.
 **Check crawler stats:**
 ```bash
 curl -X GET https://agentdirectory.exchange/api/v1/crawler/stats \
-  -H "Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg"
+  -H "Authorization: Bearer <YOUR_ADMIN_API_KEY_HERE>"
 ```
 
 **Review pending agents:**
@@ -173,7 +173,7 @@ python review_submissions.py
 **Bulk approve pending high-quality agents:**
 ```bash
 curl -X POST "https://agentdirectory.exchange/api/v1/crawler/approve-pending?min_quality_score=65&limit=100" \
-  -H "Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg"
+  -H "Authorization: Bearer <YOUR_ADMIN_API_KEY_HERE>"
 ```
 
 ---
@@ -239,7 +239,7 @@ Return summary (created/skipped)
 
 **Headers:**
 ```
-Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+Authorization: Bearer <YOUR_ADMIN_API_KEY_HERE>
 Content-Type: application/json
 ```
 
@@ -279,7 +279,7 @@ Content-Type: application/json
 
 **Headers:**
 ```
-Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+Authorization: Bearer <YOUR_ADMIN_API_KEY_HERE>
 ```
 
 **Response:**
@@ -306,7 +306,7 @@ Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
 
 **Headers:**
 ```
-Authorization: Bearer eagle_admin_fKT_2h8bHlZaVsvzjoIIvgDw0EhWkcQOsnew5LgqbNg
+Authorization: Bearer <YOUR_ADMIN_API_KEY_HERE>
 ```
 
 **Response:**
