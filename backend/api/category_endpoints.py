@@ -18,7 +18,9 @@ class CategoryBase(BaseModel):
     slug: str
     name: str
     description: Optional[str] = None
+    search_volume: int = 0
     agent_count: int = 0
+    tier: int = 4
     parent_category: Optional[str] = None
 
 
@@ -41,7 +43,7 @@ class CategoryDetail(BaseModel):
     related_categories: List[CategoryBase] = []
 
 
-@router.get("/categories", response_model=List[CategoryBase])
+@router.get("/categories")
 async def list_categories(
     parent: Optional[str] = Query(None, description="Filter by parent category"),
     db: Session = Depends(get_db)
@@ -50,6 +52,8 @@ async def list_categories(
     List all agent categories with agent counts.
     
     Optionally filter by parent category (content, customer, marketing, data, development, operations).
+    
+    Returns: {"categories": [...]}
     """
     try:
         query = text("""
@@ -57,28 +61,43 @@ async def list_categories(
                 ac.slug,
                 ac.name,
                 ac.description,
+                ac.search_volume,
                 ac.parent_category,
                 COUNT(a.id) as agent_count
             FROM agent_categories ac
             LEFT JOIN agents a ON a.primary_use_case = ac.slug
             WHERE (:parent IS NULL OR ac.parent_category = :parent)
-            GROUP BY ac.id, ac.slug, ac.name, ac.description, ac.parent_category
-            ORDER BY agent_count DESC, ac.name ASC
+            GROUP BY ac.id, ac.slug, ac.name, ac.description, ac.search_volume, ac.parent_category
+            ORDER BY ac.search_volume DESC, ac.name ASC
         """)
         
         result = db.execute(query, {"parent": parent})
         categories = []
         
         for row in result:
-            categories.append(CategoryBase(
-                slug=row[0],
-                name=row[1],
-                description=row[2],
-                parent_category=row[3],
-                agent_count=row[4]
-            ))
+            search_vol = row[3] or 0
+            # Calculate tier based on search volume
+            if search_vol >= 7000:
+                tier = 1  # Ultra high-volume
+            elif search_vol >= 3000:
+                tier = 2  # High-volume
+            elif search_vol >= 1500:
+                tier = 3  # Medium-volume
+            else:
+                tier = 4  # Niche
+            
+            categories.append({
+                "slug": row[0],
+                "name": row[1],
+                "description": row[2],
+                "search_volume": search_vol,
+                "parent_category": row[4],
+                "agent_count": row[5],
+                "tier": tier
+            })
         
-        return categories
+        # Return wrapped in categories key for frontend
+        return {"categories": categories}
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch categories: {str(e)}")
