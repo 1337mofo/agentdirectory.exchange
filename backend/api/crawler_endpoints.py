@@ -101,6 +101,17 @@ async def crawler_submit_agents(
             # Auto-approve high quality agents (score >= 70)
             auto_approve = agent_data.quality_score >= 70
             
+            # Convert agent_type string to enum if provided
+            from models.agent import AgentType
+            agent_type_enum = None
+            if agent_data.agent_type:
+                try:
+                    agent_type_enum = AgentType[agent_data.agent_type.upper()]
+                except (KeyError, AttributeError):
+                    agent_type_enum = AgentType.API  # Default for discovered agents
+            else:
+                agent_type_enum = AgentType.API  # Default
+            
             new_agent = Agent(
                 id=agent_id,
                 name=agent_data.name,
@@ -117,7 +128,7 @@ async def crawler_submit_agents(
                 pending_review=not auto_approve,
                 approved_at=datetime.utcnow() if auto_approve else None,
                 # Metadata
-                agent_type=agent_data.agent_type,
+                agent_type=agent_type_enum,
                 categories=agent_data.categories,
                 created_at=datetime.utcnow()
             )
