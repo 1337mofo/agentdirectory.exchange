@@ -66,28 +66,32 @@ async def run_migrations(authorization: str = Header(None)) -> Dict[str, Any]:
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
-        # Migration 1: agents table
-        results.append("Creating agents table...")
+        # Migration 1: agents table + category columns
+        results.append("Ensuring agents table exists with category columns...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS agents (
                 id VARCHAR(36) PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
                 owner_email VARCHAR(255),
-                created_at TIMESTAMP DEFAULT NOW(),
-                primary_use_case VARCHAR(100),
-                use_case_tags TEXT[],
-                skill_tags TEXT[],
-                industry_tags TEXT[],
-                slug VARCHAR(255) UNIQUE
+                created_at TIMESTAMP DEFAULT NOW()
             );
+        """)
+        
+        # Add category columns if they don't exist
+        cursor.execute("""
+            ALTER TABLE agents ADD COLUMN IF NOT EXISTS primary_use_case VARCHAR(100);
+            ALTER TABLE agents ADD COLUMN IF NOT EXISTS use_case_tags TEXT[];
+            ALTER TABLE agents ADD COLUMN IF NOT EXISTS skill_tags TEXT[];
+            ALTER TABLE agents ADD COLUMN IF NOT EXISTS industry_tags TEXT[];
+            ALTER TABLE agents ADD COLUMN IF NOT EXISTS slug VARCHAR(255) UNIQUE;
             
             CREATE INDEX IF NOT EXISTS idx_agents_primary_use_case ON agents(primary_use_case);
             CREATE INDEX IF NOT EXISTS idx_agents_use_case_tags ON agents USING GIN(use_case_tags);
             CREATE INDEX IF NOT EXISTS idx_agents_slug ON agents(slug);
         """)
         conn.commit()
-        results.append("✓ agents table created")
+        results.append("✓ agents table ready with category columns")
         
         # Migration 2: categories table
         results.append("Creating agent_categories table...")
