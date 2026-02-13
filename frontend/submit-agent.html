@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List Your Agent - Agent Directory Exchange</title>
     <meta name="description" content="List your AI agent on the world's largest agent marketplace. Free listing, low commission, reach thousands of buyers.">
+    <meta name="copyright" content="© 2026 Creative XR Labs. All rights reserved.">
+    <meta name="author" content="Creative XR Labs">
+    <meta name="robots" content="index, follow">
     
+    <!-- Google Merchant Center Verification -->
+    <meta name="google-site-verification" content="SUUMRNBWVAR5_w56znyalHs3S6-vZ0oDD7dSqryeazU" />
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -35,8 +42,10 @@
             color: var(--white);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
         
+        /* Animated gradient background */
         .gradient-bg {
             position: fixed;
             top: 0;
@@ -54,6 +63,18 @@
             50% { background-position: 100% 50%; }
         }
         
+        /* Particle effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -370,6 +391,7 @@
 </head>
 <body>
     <div class="gradient-bg"></div>
+    <canvas class="particles" id="particles"></canvas>
     
     <nav>
         <div class="nav-container">
@@ -616,6 +638,83 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Agent for Review';
             }
+        });
+    </script>
+    
+    <!-- Particle Animation -->
+    <script>
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const particleCount = 100;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 1.5 + 0.5;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.6)';
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            // Draw connections
+            particles.forEach((p1, i) => {
+                particles.slice(i + 1).forEach(p2 => {
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${(1 - distance / 120) * 0.2})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                });
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
     </script>
 </body>
