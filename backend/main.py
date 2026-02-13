@@ -113,6 +113,17 @@ def serve_landing_page():
         "search_agents": "/api/v1/agents/search"
     }
 
+@app.get("/categories.html")
+def serve_categories_page():
+    """Serve categories page HTML"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    frontend_path = os.path.join(base_dir, "frontend", "categories.html")
+    
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path, media_type="text/html")
+    
+    return {"detail": "Categories page not found"}
+
 # ==========================================
 # Health Check
 # ==========================================
