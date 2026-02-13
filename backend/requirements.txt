@@ -34,8 +34,8 @@ base58==2.1.1
 redis==5.0.1
 slowapi==0.1.9
 
-# HTTP Requests
-httpx==0.26.0
+# HTTP Requests (httpx pinned to 0.23.3 for solana compatibility - requires <0.24.0)
+httpx==0.23.3
 requests==2.31.0
 
 # Background Tasks
