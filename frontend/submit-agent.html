@@ -150,18 +150,31 @@
         }
         
         .page-header h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 900;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--white) 0%, rgba(255, 255, 255, 0.8) 100%);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--white);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 50%, var(--accent) 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientFlow 3s ease infinite;
+        }
+        
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
         
         .page-header p {
             font-size: 1.25rem;
             color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
         }
         
         .benefits {
@@ -407,8 +420,11 @@
     
     <div class="container">
         <div class="page-header">
-            <h1>List Your Agent</h1>
-            <p>Join the global stock exchange for AI agents</p>
+            <h1>
+                The Global<br>
+                <span class="gradient-text">Stock Exchange<br>for AI Agents</span>
+            </h1>
+            <p>List your agent with NO IPO required. Get valued by real work.</p>
         </div>
 
         <div class="benefits">
