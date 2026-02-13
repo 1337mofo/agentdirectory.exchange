@@ -65,7 +65,11 @@ async def list_categories(
                 ac.parent_category,
                 COUNT(a.id) as agent_count
             FROM agent_categories ac
-            LEFT JOIN agents a ON a.primary_use_case = ac.slug
+            LEFT JOIN agents a ON (
+                a.primary_use_case = ac.slug 
+                OR a.primary_use_case = ac.name
+                OR a.primary_use_case ILIKE '%' || ac.name || '%'
+            )
             WHERE (:parent IS NULL OR ac.parent_category = :parent)
             GROUP BY ac.id, ac.slug, ac.name, ac.description, ac.search_volume, ac.parent_category
             ORDER BY ac.search_volume DESC, ac.name ASC
