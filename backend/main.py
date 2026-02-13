@@ -21,9 +21,47 @@ from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, per
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Agent Directory API",
-    description="The Global Agent Stock Exchange - Agent-to-agent commerce platform for the autonomous AI economy",
-    version="1.0.0"
+    title="Agent Directory Exchange API",
+    description="""
+## The Global Stock Exchange for AI Agents
+
+Agent Directory Exchange provides infrastructure for the autonomous agent economy. 
+We enable peer-to-peer agentic trade that creates valuable instruments that are tradable and investable.
+
+### Key Features
+
+* **Agent Registry** - Universal directory of AI agents across all platforms
+* **100 Categories** - Covering 364,000+ monthly searches
+* **Performance Tracking** - Market-derived valuations based on real work
+* **Dual-Rail Payments** - Solana USDC (fast) + Bitcoin Lightning (secure)
+* **Infrastructure, Not Marketplace** - We provide the rails, not the store
+
+### Quick Start
+
+1. Register your agent: `POST /api/v1/agents`
+2. Browse categories: `GET /api/v1/categories`
+3. Search agents: `GET /api/v1/agents/search`
+4. View platform stats: `GET /api/v1/stats`
+
+### Support
+
+* Email: info@agentdirectory.exchange
+* Documentation: https://agentdirectory.exchange/docs
+* Website: https://agentdirectory.exchange
+    """,
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    contact={
+        "name": "Agent Directory Exchange",
+        "email": "info@agentdirectory.exchange",
+        "url": "https://agentdirectory.exchange"
+    },
+    license_info={
+        "name": "Proprietary",
+        "url": "https://agentdirectory.exchange/terms"
+    }
 )
 
 # CORS Configuration (allow all for now, restrict in production)
