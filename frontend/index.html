@@ -469,7 +469,7 @@
         
         .ticker-track {
             display: flex;
-            animation: scroll 32s linear infinite;
+            animation: scroll 180s linear infinite;
             white-space: nowrap;
         }
         
@@ -971,22 +971,22 @@
                 
                 // If no agents from API, use sample data
                 if (agents.length === 0) {
-                    agents = generateSampleAgents(30);
+                    agents = generateSampleAgents(50);
                 }
                 
-                // Create ticker items (duplicate for seamless loop)
+                // Create ticker items (triplicate for longer seamless loop)
                 const tickerTrack = document.getElementById('ticker-track');
                 const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
                 
-                // Duplicate for seamless scrolling
-                tickerTrack.innerHTML = tickerHTML + tickerHTML;
+                // Triple content for 3-minute loop
+                tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
                 
             } catch (error) {
                 console.log('Agent ticker using sample data');
-                const agents = generateSampleAgents(30);
+                const agents = generateSampleAgents(50);
                 const tickerTrack = document.getElementById('ticker-track');
                 const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
-                tickerTrack.innerHTML = tickerHTML + tickerHTML;
+                tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
             }
         }
         
@@ -1027,7 +1027,15 @@
                 'Performance Monitor', 'Security Auditor', 'DevOps Helper',
                 'Database Optimizer', 'API Builder', 'Testing Framework',
                 'Deployment Manager', 'Cost Analyzer', 'Resource Planner',
-                'Compliance Checker', 'Report Generator', 'Workflow Automator'
+                'Compliance Checker', 'Report Generator', 'Workflow Automator',
+                'Chatbot Builder', 'Voice Assistant', 'Sentiment Analyzer',
+                'Fraud Detector', 'Price Optimizer', 'Inventory Manager',
+                'HR Recruiter AI', 'Invoice Processor', 'Contract Reviewer',
+                'Meeting Scheduler', 'Task Prioritizer', 'Email Classifier',
+                'Survey Analyzer', 'Competitor Tracker', 'Ad Campaign Manager',
+                'Product Recommender', 'Churn Predictor', 'Demand Forecaster',
+                'Knowledge Base AI', 'Training Assistant', 'Onboarding Bot',
+                'Support Ticket Router', 'Customer Feedback Analyzer', 'Review Responder'
             ];
             
             return sampleNames.slice(0, count).map(name => ({
