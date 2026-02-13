@@ -80,13 +80,14 @@ async def seed_agents(authorization: str = Header(None)):
             agent_id = str(uuid.uuid4())
             
             cursor.execute("""
-                INSERT INTO agents (id, name, description, primary_use_case, created_at)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO agents (id, name, description, primary_use_case, agent_type, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 agent_id,
                 agent["name"],
                 agent["description"],
                 agent["use_case"],
+                'AUTONOMOUS',  # Default agent type
                 datetime.utcnow()
             ))
             inserted += 1
