@@ -5,6 +5,11 @@ ADMIN_API_KEY.txt
 .env
 .env.local
 
+# Solana Wallets (CRITICAL - Never commit!)
+TREASURY_WALLET*.json
+*.wallet
+backend/payments/TREASURY_WALLET*.json
+
 # Python
 __pycache__/
 *.py[cod]
