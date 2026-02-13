@@ -14,7 +14,7 @@ import os
 from database.base import get_db, init_db
 from models.agent import Agent, AgentType, VerificationStatus
 from models.listing import Listing, ListingType, ListingStatus
-from models.transaction import Transaction
+from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
 from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints

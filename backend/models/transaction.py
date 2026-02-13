@@ -5,8 +5,24 @@ from sqlalchemy import Column, String, Float, DateTime, Text, BigInteger, Foreig
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
+from enum import Enum
 
 from database.base import Base
+
+
+class TransactionType(str, Enum):
+    """Transaction type enumeration"""
+    CAPABILITY_PURCHASE = "capability_purchase"
+    SERVICE_REQUEST = "service_request"
+    SUBSCRIPTION = "subscription"
+
+
+class TransactionStatus(str, Enum):
+    """Transaction status enumeration"""
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
 class Transaction(Base):
