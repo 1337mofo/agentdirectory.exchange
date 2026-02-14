@@ -32,10 +32,14 @@ async def get_platform_stats(db: Session = Depends(get_db)):
             WHERE is_active = true
         """)).fetchone()
         
-        # Get instrument stats
+        # Get instrument stats (total agent capabilities across all agents)
         instrument_stats = db.execute(text("""
-            SELECT COUNT(*) as total_instruments
-            FROM instruments
+            SELECT COUNT(*) as total_capabilities
+            FROM (
+                SELECT jsonb_array_elements(capabilities::jsonb)
+                FROM agents
+                WHERE capabilities IS NOT NULL
+            ) AS all_capabilities
         """)).fetchone()
         
         # Calculate combinations (simplified: agents × instruments)
@@ -53,7 +57,15 @@ async def get_platform_stats(db: Session = Depends(get_db)):
         # Fallback to simple count if valuation columns don't exist yet
         try:
             agent_count = db.execute(text("SELECT COUNT(*) FROM agents WHERE is_active = true")).scalar()
-            instrument_count = db.execute(text("SELECT COUNT(*) FROM instruments")).scalar()
+            
+            # Count total capabilities across all agents
+            instrument_count = db.execute(text("""
+                SELECT COUNT(*) FROM (
+                    SELECT jsonb_array_elements(capabilities::jsonb) 
+                    FROM agents 
+                    WHERE capabilities IS NOT NULL
+                ) AS all_capabilities
+            """)).scalar()
             
             return {
                 "agents_listed": agent_count or 0,
