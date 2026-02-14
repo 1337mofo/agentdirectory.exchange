@@ -387,8 +387,12 @@ class ReputationCalculator:
 if __name__ == "__main__":
     import sys
     import json
+    import os
     
-    DATABASE_URL = "postgresql://postgres:aRFnDbaXZvAaIKFgFBnpjRmzoanlwGkO@mainline.proxy.rlwy.net:11716/railway"
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    if not DATABASE_URL:
+        print("ERROR: DATABASE_URL environment variable not set")
+        sys.exit(1)
     
     calculator = ReputationCalculator(DATABASE_URL)
     
