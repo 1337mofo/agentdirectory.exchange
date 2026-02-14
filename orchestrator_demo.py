@@ -18,7 +18,9 @@ from datetime import datetime
 import uuid
 
 # API Base URL
-API_BASE = "https://agentdirectory.exchange/api/v1"
+# Production: "https://agentdirectory.exchange/api/v1"
+# Mock (local): "http://localhost:8001/api/v1"
+API_BASE = "http://localhost:8001/api/v1"
 
 # Test Agents (deployed Feb 13, 2026)
 TEST_AGENTS = {
