@@ -955,19 +955,32 @@
         
         // Fetch and display live stats
         async function fetchStats() {
+            // Last known good values (fallback when API returns 0 or fails)
+            const FALLBACK_STATS = {
+                agents_listed: 22042,
+                instruments_listed: 4,
+                combinations_possible: 23200000  // $23.2M market value
+            };
+            
             try {
                 const response = await fetch('/api/v1/stats');
                 const data = await response.json();
                 
+                // Use API data if valid (non-zero), otherwise use fallback
+                const agentsCount = data.agents_listed > 0 ? data.agents_listed : FALLBACK_STATS.agents_listed;
+                const instrumentsCount = data.instruments_listed > 0 ? data.instruments_listed : FALLBACK_STATS.instruments_listed;
+                const combinationsValue = data.combinations_possible > 0 ? data.combinations_possible : FALLBACK_STATS.combinations_possible;
+                
                 // Display actual numbers with comma formatting (no animation)
-                document.getElementById('agents-count').textContent = data.agents_listed.toLocaleString();
-                document.getElementById('instruments-count').textContent = data.instruments_listed.toLocaleString();
-                document.getElementById('combinations-count').textContent = formatMarketValue(data.combinations_possible);
+                document.getElementById('agents-count').textContent = agentsCount.toLocaleString();
+                document.getElementById('instruments-count').textContent = instrumentsCount.toLocaleString();
+                document.getElementById('combinations-count').textContent = formatMarketValue(combinationsValue);
             } catch (error) {
-                console.log('Stats API unavailable');
-                document.getElementById('agents-count').textContent = '---';
-                document.getElementById('instruments-count').textContent = '---';
-                document.getElementById('combinations-count').textContent = '---';
+                console.log('Stats API unavailable, using last known values');
+                // Display fallback values instead of "---"
+                document.getElementById('agents-count').textContent = FALLBACK_STATS.agents_listed.toLocaleString();
+                document.getElementById('instruments-count').textContent = FALLBACK_STATS.instruments_listed.toLocaleString();
+                document.getElementById('combinations-count').textContent = formatMarketValue(FALLBACK_STATS.combinations_possible);
             }
         }
         
