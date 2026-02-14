@@ -147,8 +147,8 @@ def match_agents_to_capabilities(capabilities: List[str], constraints: Dict, con
     """Find agents matching capabilities and constraints"""
     cur = conn.cursor()
     
-    # Build query based on capabilities
-    capability_conditions = " OR ".join([f"capabilities @> '\"{cap}\"'" for cap in capabilities])
+    # Build query based on capabilities (cast json to jsonb for containment operator)
+    capability_conditions = " OR ".join([f"capabilities::jsonb @> '\[\"{ cap}\"\]'" for cap in capabilities])
     
     query = f"""
         SELECT 
