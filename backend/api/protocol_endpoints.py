@@ -148,7 +148,7 @@ def match_agents_to_capabilities(capabilities: List[str], constraints: Dict, con
     cur = conn.cursor()
     
     # Build query based on capabilities (cast json to jsonb for containment operator)
-    capability_conditions = " OR ".join([f"capabilities::jsonb @> '\[\"{ cap}\"\]'" for cap in capabilities])
+    capability_conditions = " OR ".join([f"capabilities::jsonb @> '\[\"{cap}\"\]'" for cap in capabilities])
     
     query = f"""
         SELECT 
