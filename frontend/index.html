@@ -610,6 +610,32 @@
                 white-space: nowrap;
             }
             
+            /* Ticker on mobile - position below nav */
+            .ticker-container {
+                position: fixed;
+                top: 140px; /* Below mobile nav height */
+                z-index: 998;
+                padding: 0.5rem 0;
+            }
+            
+            .ticker-item {
+                padding: 0 1.5rem;
+                font-size: 0.85rem;
+            }
+            
+            .ticker-symbol {
+                font-size: 0.9rem;
+            }
+            
+            .ticker-name {
+                max-width: 120px;
+                font-size: 0.85rem;
+            }
+            
+            .ticker-value {
+                font-size: 0.85rem;
+            }
+            
             /* Hero section */
             .hero {
                 padding: 10rem 1.5rem 4rem;
@@ -1195,49 +1221,43 @@
             return '$' + formatLargeNumber(num);
         }
         
-        // Agent Ticker
+        // Agent Ticker - Uses REAL data from discovery events
         async function loadAgentTicker() {
             try {
-                // Fetch real agents from API
-                const response = await fetch('/api/v1/agents?limit=50');
+                // Fetch real agents from activity feed (same data as discovery events)
+                const response = await fetch('/api/v1/activity/recent?limit=50');
                 const data = await response.json();
                 
-                let agents = data.agents || [];
-                
-                // If no agents from API, use sample data
-                if (agents.length === 0) {
-                    agents = generateSampleAgents(50);
+                if (data.success && data.activity && data.activity.length > 0) {
+                    const agents = data.activity.map(event => ({
+                        name: event.agent_name,
+                        exchange_value: event.exchange_value || 0
+                    }));
+                    
+                    // Create ticker items
+                    const tickerTrack = document.getElementById('ticker-track');
+                    const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
+                    
+                    // Triple content for seamless loop
+                    tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
+                } else {
+                    console.log('No activity data available for ticker');
                 }
                 
-                // Create ticker items (triplicate for longer seamless loop)
-                const tickerTrack = document.getElementById('ticker-track');
-                const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
-                
-                // Triple content for 3-minute loop
-                tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
-                
             } catch (error) {
-                console.log('Agent ticker using sample data');
-                const agents = generateSampleAgents(50);
-                const tickerTrack = document.getElementById('ticker-track');
-                const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
-                tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
+                console.log('Agent ticker error:', error);
             }
         }
         
         function createTickerItem(agent) {
             const symbol = generateTickerSymbol(agent.name);
-            const value = agent.value || (Math.random() * 5000 + 500).toFixed(0);
-            const change = agent.change || ((Math.random() - 0.5) * 20).toFixed(2);
-            const changeClass = parseFloat(change) >= 0 ? 'up' : 'down';
-            const changeSymbol = parseFloat(change) >= 0 ? '▲' : '▼';
+            const value = agent.exchange_value ? agent.exchange_value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00';
             
             return `
                 <div class="ticker-item">
                     <span class="ticker-symbol">${symbol}</span>
                     <span class="ticker-name">${agent.name}</span>
                     <span class="ticker-value">$${value}</span>
-                    <span class="ticker-change ${changeClass}">${changeSymbol} ${Math.abs(change)}%</span>
                 </div>
             `;
         }
