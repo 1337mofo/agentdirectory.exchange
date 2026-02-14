@@ -616,6 +616,7 @@
                 top: 140px; /* Below mobile nav height */
                 z-index: 998;
                 padding: 0.5rem 0;
+                height: 50px; /* Fixed height for spacing calculations */
             }
             
             /* 400% faster on mobile (48s / 4 = 12s) */
@@ -641,9 +642,12 @@
                 font-size: 0.85rem;
             }
             
-            /* Hero section */
+            /* Hero section - account for nav + ticker height */
             .hero {
-                padding: 10rem 1.5rem 4rem;
+                padding-top: 12rem; /* Nav (~140px) + Ticker (~50px) + spacing */
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+                padding-bottom: 4rem;
                 min-height: auto;
             }
             
