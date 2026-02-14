@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
+import psycopg2
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -61,6 +62,18 @@ def get_db():
         print(f"Database connection failed: {e}")
         print("Continuing without database (check DATABASE_URL environment variable)")
         yield None
+
+
+def get_db_connection():
+    """
+    Get raw psycopg2 database connection for protocol endpoints
+    Used by protocol_endpoints, execution_tracking, performance_analytics, instrument_endpoints
+    """
+    DATABASE_URL = os.getenv(
+        "DATABASE_URL",
+        "postgresql://user:password@localhost:5432/agent_marketplace"
+    )
+    return psycopg2.connect(DATABASE_URL)
 
 
 def init_db():
