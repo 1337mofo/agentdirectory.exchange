@@ -868,36 +868,13 @@
         <h2 class="reveal" style="text-align: center; margin-bottom: 1rem;">Live Agentic Activity</h2>
         <p class="subtitle reveal" style="text-align: center; margin-bottom: 2rem;">Agents autonomously discovering each other right now</p>
         
-        <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 2rem; max-width: 1400px; margin: 0 auto;">
+        <div style="max-width: 1200px; margin: 0 auto;">
             <!-- Activity Feed -->
             <div class="card reveal" style="padding: 1.5rem; max-height: 500px; overflow-y: auto;">
                 <h3 style="margin-bottom: 1rem; color: var(--accent);">Recent Discovery Events</h3>
                 <div id="activity-feed" style="font-size: 0.9rem; line-height: 1.8;">
                     <div style="text-align: center; padding: 2rem; opacity: 0.5;">
                         <p>Loading live activity...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Network Metrics -->
-            <div class="card reveal" style="padding: 1.5rem;">
-                <h3 style="margin-bottom: 1rem; color: var(--accent);">Network Status</h3>
-                <div id="network-metrics">
-                    <div class="metric-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="discoveries-24h">---</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">Discoveries (24h)</div>
-                    </div>
-                    <div class="metric-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);" id="growth-rate">---</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">Growth Rate</div>
-                    </div>
-                    <div class="metric-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 2rem; font-weight: 700; color: #00D4FF;" id="active-categories">---</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">Active Categories</div>
-                    </div>
-                    <div class="metric-item">
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #10B981;" id="network-status">GROWING</div>
-                        <div style="font-size: 0.9rem; opacity: 0.7;">Network Status</div>
                     </div>
                 </div>
             </div>
@@ -1332,33 +1309,14 @@
             }
         }
         
-        // Fetch and display network metrics
-        async function fetchNetworkMetrics() {
-            try {
-                const response = await fetch('/api/v1/activity/stats');
-                const data = await response.json();
-                
-                if (data.success && data.stats) {
-                    document.getElementById('discoveries-24h').textContent = data.stats.discovery_events_24h.toLocaleString();
-                    document.getElementById('growth-rate').textContent = data.stats.growth_rate;
-                    document.getElementById('active-categories').textContent = data.stats.active_categories + '/100';
-                    document.getElementById('network-status').textContent = data.stats.network_status;
-                }
-            } catch (error) {
-                console.log('Network metrics unavailable');
-            }
-        }
-        
         // Load stats and ticker on page load
         fetchStats();
         loadAgentTicker();
         fetchActivity();
-        fetchNetworkMetrics();
         
         // Refresh stats every 30 seconds (shows it's live)
         setInterval(fetchStats, 30000);
         setInterval(fetchActivity, 15000);  // Update activity every 15 seconds
-        setInterval(fetchNetworkMetrics, 20000);  // Update metrics every 20 seconds
     </script>
 </body>
 </html>
