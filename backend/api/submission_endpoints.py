@@ -358,10 +358,14 @@ async def notify_submitter_of_decision(
     import os
     
     # Email configuration (GoDaddy SMTP)
-    SMTP_SERVER = "smtpout.secureserver.net"
-    SMTP_PORT = 587
-    FROM_EMAIL = "nova@agentdirectory.exchange"
-    FROM_PASSWORD = "1nf0AgNT2026!"  # This should be in env var
+    SMTP_SERVER = os.getenv("SMTP_SERVER", "smtpout.secureserver.net")
+    SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+    FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "nova@agentdirectory.exchange")
+    FROM_PASSWORD = os.getenv("SMTP_PASSWORD")
+    
+    if not FROM_PASSWORD:
+        print(f"WARNING: SMTP_PASSWORD not configured, email notification skipped for {email}")
+        return
     
     try:
         if approved:
