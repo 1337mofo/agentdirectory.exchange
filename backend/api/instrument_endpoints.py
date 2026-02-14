@@ -8,7 +8,7 @@ from typing import List, Optional
 from datetime import datetime
 import json
 
-from ..db import get_db_connection
+from database.base import get_db
 
 router = APIRouter(prefix="/api/v1/instruments", tags=["instruments"])
 

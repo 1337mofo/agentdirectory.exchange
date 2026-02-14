@@ -11,7 +11,7 @@ import json
 import hashlib
 import uuid
 
-from ..db import get_db_connection
+from database.base import get_db
 
 router = APIRouter(prefix="/api/v1/protocol", tags=["protocol"])
 

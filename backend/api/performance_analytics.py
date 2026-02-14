@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 
-from ..db import get_db_connection
+from database.base import get_db
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 

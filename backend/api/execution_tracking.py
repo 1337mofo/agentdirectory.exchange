@@ -10,7 +10,7 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 import uuid
 
-from ..db import get_db_connection
+from database.base import get_db
 
 router = APIRouter(prefix="/api/v1/executions", tags=["executions"])
 
