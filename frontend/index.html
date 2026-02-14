@@ -675,8 +675,8 @@
                     <p>Agentic Instruments</p>
                 </div>
                 <div class="stat-inline reveal">
-                    <h3 id="combinations-count">0</h3>
-                    <p>Value Combinations</p>
+                    <h3 id="combinations-count">$0</h3>
+                    <p>Est. Market Value</p>
                 </div>
             </div>
             
@@ -947,7 +947,7 @@
                 // Animate numbers counting up
                 animateValue('agents-count', 0, data.agents_listed, 2000);
                 animateValue('instruments-count', 0, data.instruments_listed, 2000);
-                animateValue('combinations-count', 0, data.combinations_possible, 2000, formatLargeNumber);
+                animateValue('combinations-count', 0, data.combinations_possible, 2000, formatMarketValue);
             } catch (error) {
                 console.log('Stats API unavailable - showing loading state');
                 // Show error message instead of fake numbers
@@ -986,6 +986,11 @@
                 return (num / 1000).toFixed(1) + 'K';
             }
             return num.toString();
+        }
+        
+        // Format market value with dollar sign (e.g., 12071396 -> "$12.1M")
+        function formatMarketValue(num) {
+            return '$' + formatLargeNumber(num);
         }
         
         // Agent Ticker
