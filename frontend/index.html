@@ -667,17 +667,20 @@
             <!-- Stats Section - Above the Fold -->
             <div class="stats-inline">
                 <div class="stat-inline reveal">
-                    <h3 id="agents-count">0</h3>
+                    <h3 id="agents-count" style="font-family: 'Courier New', monospace;">---</h3>
                     <p>Agents Listed</p>
                 </div>
                 <div class="stat-inline reveal">
-                    <h3 id="instruments-count">0</h3>
+                    <h3 id="instruments-count" style="font-family: 'Courier New', monospace;">---</h3>
                     <p>Agentic Instruments</p>
                 </div>
                 <div class="stat-inline reveal">
-                    <h3 id="combinations-count">$0</h3>
+                    <h3 id="combinations-count" style="font-family: 'Courier New', monospace;">---</h3>
                     <p>Est. Market Value</p>
                 </div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem; font-size: 0.75rem; color: rgba(255,255,255,0.5); font-family: 'Courier New', monospace;">
+                <span id="stats-timestamp">Live data</span>
             </div>
             
             <div class="cta-buttons">
@@ -944,16 +947,22 @@
                 const response = await fetch('/api/v1/stats');
                 const data = await response.json();
                 
-                // Animate numbers counting up
-                animateValue('agents-count', 0, data.agents_listed, 2000);
-                animateValue('instruments-count', 0, data.instruments_listed, 2000);
-                animateValue('combinations-count', 0, data.combinations_possible, 2000, formatMarketValue);
+                // Display actual numbers with comma formatting (no animation)
+                document.getElementById('agents-count').textContent = data.agents_listed.toLocaleString();
+                document.getElementById('instruments-count').textContent = data.instruments_listed.toLocaleString();
+                document.getElementById('combinations-count').textContent = '$' + Math.round(data.combinations_possible).toLocaleString();
+                
+                // Add timestamp
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Bangkok' });
+                const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Bangkok' });
+                document.getElementById('stats-timestamp').textContent = `Live • ${dateStr} ${timeStr} GMT+7`;
             } catch (error) {
-                console.log('Stats API unavailable - showing loading state');
-                // Show error message instead of fake numbers
-                document.getElementById('agents-count').textContent = '...';
-                document.getElementById('instruments-count').textContent = '...';
-                document.getElementById('combinations-count').textContent = '...';
+                console.log('Stats API unavailable');
+                document.getElementById('agents-count').textContent = '---';
+                document.getElementById('instruments-count').textContent = '---';
+                document.getElementById('combinations-count').textContent = '---';
+                document.getElementById('stats-timestamp').textContent = 'Offline';
             }
         }
         
@@ -1081,6 +1090,9 @@
         // Load stats and ticker on page load
         fetchStats();
         loadAgentTicker();
+        
+        // Refresh stats every 30 seconds (shows it's live)
+        setInterval(fetchStats, 30000);
     </script>
 </body>
 </html>
