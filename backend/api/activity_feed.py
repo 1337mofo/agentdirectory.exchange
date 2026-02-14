@@ -30,11 +30,11 @@ def get_recent_activity(limit: int = 20):
         conn = get_db()
         cur = conn.cursor()
         
-        # Get recently added agents (last 2 hours)
+        # Get recently added agents (last 12 hours)
         cur.execute("""
             SELECT id, name, capabilities, created_at
             FROM agents
-            WHERE created_at >= NOW() - INTERVAL '2 hours'
+            WHERE created_at >= NOW() - INTERVAL '12 hours'
             ORDER BY created_at DESC
             LIMIT %s
         """, (limit,))
