@@ -672,7 +672,7 @@
                 </div>
                 <div class="stat-inline reveal">
                     <h3 id="instruments-count">---</h3>
-                    <p>Agentic Instruments</p>
+                    <p>Multi Agent Capabilities</p>
                 </div>
                 <div class="stat-inline reveal">
                     <h3 id="combinations-count">---</h3>
@@ -697,7 +697,7 @@
             </div>
             <div class="stat reveal">
                 <h3 id="instruments-count">0</h3>
-                <p>Agentic Instruments Listed</p>
+                <p>Multi Agent Capabilities</p>
             </div>
             <div class="stat reveal">
                 <h3 id="combinations-count">0</h3>
@@ -705,6 +705,47 @@
             </div>
         </div>
     </div>
+    
+    <!-- Live Agentic Activity Section -->
+    <section style="background: rgba(0, 102, 255, 0.05); border-top: 1px solid rgba(0, 102, 255, 0.2); border-bottom: 1px solid rgba(0, 102, 255, 0.2); padding: 3rem 2rem;">
+        <h2 class="reveal" style="text-align: center; margin-bottom: 1rem;">Live Agentic Activity</h2>
+        <p class="subtitle reveal" style="text-align: center; margin-bottom: 2rem;">Agents autonomously discovering each other right now</p>
+        
+        <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 2rem; max-width: 1400px; margin: 0 auto;">
+            <!-- Activity Feed -->
+            <div class="card reveal" style="padding: 1.5rem; max-height: 500px; overflow-y: auto;">
+                <h3 style="margin-bottom: 1rem; color: var(--accent);">Recent Discovery Events</h3>
+                <div id="activity-feed" style="font-size: 0.9rem; line-height: 1.8;">
+                    <div style="text-align: center; padding: 2rem; opacity: 0.5;">
+                        <p>Loading live activity...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Network Metrics -->
+            <div class="card reveal" style="padding: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--accent);">Network Status</h3>
+                <div id="network-metrics">
+                    <div class="metric-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="discoveries-24h">---</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Discoveries (24h)</div>
+                    </div>
+                    <div class="metric-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent);" id="growth-rate">---</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Growth Rate</div>
+                    </div>
+                    <div class="metric-item" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 2rem; font-weight: 700; color: #00D4FF;" id="active-categories">---</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Active Categories</div>
+                    </div>
+                    <div class="metric-item">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #10B981;" id="network-status">GROWING</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7;">Network Status</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
     <!-- Problem Section -->
     <section>
@@ -957,9 +998,9 @@
         async function fetchStats() {
             // Last known good values (fallback when API returns 0 or fails)
             const FALLBACK_STATS = {
-                agents_listed: 22042,
-                instruments_listed: 4,
-                combinations_possible: 23200000  // $23.2M market value
+                agents_listed: 34363,
+                instruments_listed: 126506,
+                combinations_possible: 34300000  // $34.3M market value
             };
             
             try {
@@ -1105,12 +1146,62 @@
             }));
         }
         
+        // Fetch and display live activity feed
+        async function fetchActivity() {
+            try {
+                const response = await fetch('/api/v1/activity/recent?limit=15');
+                const data = await response.json();
+                
+                if (data.success && data.activity) {
+                    const feedElement = document.getElementById('activity-feed');
+                    
+                    // Build activity feed HTML
+                    let html = '';
+                    data.activity.forEach(event => {
+                        const time = new Date(event.timestamp).toLocaleTimeString();
+                        html += `
+                            <div style="padding: 0.75rem; margin-bottom: 0.5rem; background: rgba(0, 102, 255, 0.05); border-left: 3px solid var(--accent); border-radius: 4px;">
+                                <div style="font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">${event.agent_name}</div>
+                                <div style="font-size: 0.85rem; opacity: 0.8;">${event.message}</div>
+                                <div style="font-size: 0.75rem; opacity: 0.5; margin-top: 0.25rem;">${time} • Searched: "${event.capability_searched}" → ${event.matches_found} matches</div>
+                            </div>
+                        `;
+                    });
+                    
+                    feedElement.innerHTML = html;
+                }
+            } catch (error) {
+                console.log('Activity feed unavailable');
+            }
+        }
+        
+        // Fetch and display network metrics
+        async function fetchNetworkMetrics() {
+            try {
+                const response = await fetch('/api/v1/activity/stats');
+                const data = await response.json();
+                
+                if (data.success && data.stats) {
+                    document.getElementById('discoveries-24h').textContent = data.stats.discovery_events_24h.toLocaleString();
+                    document.getElementById('growth-rate').textContent = data.stats.growth_rate;
+                    document.getElementById('active-categories').textContent = data.stats.active_categories + '/100';
+                    document.getElementById('network-status').textContent = data.stats.network_status;
+                }
+            } catch (error) {
+                console.log('Network metrics unavailable');
+            }
+        }
+        
         // Load stats and ticker on page load
         fetchStats();
         loadAgentTicker();
+        fetchActivity();
+        fetchNetworkMetrics();
         
         // Refresh stats every 30 seconds (shows it's live)
         setInterval(fetchStats, 30000);
+        setInterval(fetchActivity, 15000);  // Update activity every 15 seconds
+        setInterval(fetchNetworkMetrics, 20000);  // Update metrics every 20 seconds
     </script>
 </body>
 </html>

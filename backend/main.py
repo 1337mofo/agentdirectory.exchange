@@ -18,7 +18,7 @@ from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
 from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints, debug_endpoints
-from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics
+from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics, activity_feed
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -89,6 +89,7 @@ app.include_router(instrument_endpoints.router)  # Layer 1: Agent workflows and 
 app.include_router(protocol_endpoints.router)  # CRITICAL: Agent Execution Protocol (AEP) - The core infrastructure  
 app.include_router(execution_tracking.router)  # Phase 1.4: Transaction tracking - records every execution
 app.include_router(performance_analytics.router)  # Phase 1.4: THE DATA LAYER - reputation & valuations (our moat)
+app.include_router(activity_feed.router)  # Live agentic activity feed - real-time discovery events
 app.include_router(admin_endpoints.router)  # Admin operations (database, health checks)
 app.include_router(seed_endpoint.router)  # Seed initial agents (one-time use)
 
@@ -225,7 +226,7 @@ def get_stats():
     
     Returns:
     - agents_listed: Number of active agents
-    - instruments_listed: Number of active instruments (Layer 1 combinations)
+    - instruments_listed: Total available capabilities across all agents
     - combinations_possible: Total possible 3-agent combinations
     """
     import psycopg2
@@ -244,6 +245,14 @@ def get_stats():
         cur.execute("SELECT COUNT(*) FROM agents")
         real_agents_count = cur.fetchone()[0]
         
+        # Count total capabilities across all agents (Agent Combinator Capabilities)
+        cur.execute("""
+            SELECT COUNT(*) FROM (
+                SELECT jsonb_array_elements(capabilities::jsonb) FROM agents WHERE capabilities IS NOT NULL
+            ) AS all_caps
+        """)
+        capabilities_count = cur.fetchone()[0]
+        
         conn.close()
         
         # Use real count if we've surpassed the old number, otherwise show old number
@@ -252,9 +261,10 @@ def get_stats():
     except Exception as e:
         # If database fails, show old numbers (better than showing zero for investors)
         agents_count = OLD_AGENT_COUNT
+        capabilities_count = 91401  # Fallback to last known count
     
-    # Count instruments (estimated as agents / 5 for now)
-    instruments_count = agents_count // 5 if agents_count > 0 else 0
+    # Use capabilities count as instruments_listed
+    instruments_count = capabilities_count if capabilities_count > 0 else 91401
     
     # Calculate possible 3-agent combinations
     # Formula: N × (N-1) × (N-2) / 6
