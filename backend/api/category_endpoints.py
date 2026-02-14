@@ -156,6 +156,7 @@ async def get_category(
             "newest": "a.created_at DESC"
         }.get(sort, "a.value_ratio DESC NULLS LAST")
         
+        # Match agents by category name (primary_use_case stores the category name, not slug)
         agents_query = text(f"""
             SELECT 
                 a.id,
@@ -171,7 +172,11 @@ async def get_category(
                 a.value_ratio,
                 a.valuation_status
             FROM agents a
-            WHERE a.primary_use_case = :slug
+            WHERE (
+                a.primary_use_case = :category_name
+                OR a.primary_use_case LIKE '%' || :category_name || '%'
+                OR a.categories::text LIKE '%' || :category_name || '%'
+            )
               AND a.is_active = true
               AND a.rating_avg >= :min_rating
             ORDER BY {sort_clause}
@@ -180,6 +185,7 @@ async def get_category(
         
         agents_result = db.execute(agents_query, {
             "slug": slug,
+            "category_name": category.name,
             "min_rating": min_rating,
             "max_price": max_price,
             "limit": limit,
