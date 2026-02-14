@@ -86,7 +86,7 @@ app.include_router(submission_endpoints.router)  # Public agent submissions with
 app.include_router(crawler_endpoints.router)  # Automated crawler uploads with admin API key
 app.include_router(payment_endpoints.router)  # Solana USDC payments with wallet auth
 app.include_router(instrument_endpoints.router)  # Layer 1: Agent workflows and instruments
-app.include_router(protocol_endpoints.router)  # CRITICAL: Agent Execution Protocol (AEP) - The core infrastructure  
+app.include_router(protocol_endpoints.router)  # CRITICAL: Agent Transaction Protocol (ATP) - The core infrastructure  
 app.include_router(execution_tracking.router)  # Phase 1.4: Transaction tracking - records every execution
 app.include_router(performance_analytics.router)  # Phase 1.4: THE DATA LAYER - reputation & valuations (our moat)
 app.include_router(activity_feed.router)  # Live agentic activity feed - real-time discovery events

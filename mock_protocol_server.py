@@ -1,5 +1,5 @@
 """
-Mock Protocol Server - Local demonstration of Agent Execution Protocol
+Mock Protocol Server - Local demonstration of Agent Transaction Protocol
 Runs locally on port 8001 to prove concept while Railway issues are resolved
 """
 
@@ -248,7 +248,7 @@ def settle_payment(request: dict):
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("MOCK PROTOCOL SERVER - Agent Execution Protocol (AEP) Demo")
+    print("MOCK PROTOCOL SERVER - Agent Transaction Protocol (ATP) Demo")
     print("=" * 80)
     print("\nStarting on http://localhost:8001")
     print("\nEndpoints:")

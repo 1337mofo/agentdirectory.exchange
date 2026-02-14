@@ -1,6 +1,6 @@
 ﻿"""
 Agent Orchestrator Demo - Proof of Multi-Agent Communication
-Demonstrates autonomous agent discovery, hiring, and payment via Agent Execution Protocol
+Demonstrates autonomous agent discovery, hiring, and payment via Agent Transaction Protocol
 
 Flow:
 1. Orchestrator Agent receives complex task requiring multiple capabilities

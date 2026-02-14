@@ -1,8 +1,8 @@
-# Agent Execution Protocol (AEP) v1.0
+# Agent Transaction Protocol (ATP) v1.0
 ## Standard Protocol for Agent-to-Agent Communication
 
 ### Overview
-The Agent Execution Protocol (AEP) defines how AI agents discover, verify, execute, and settle transactions with other agents in a peer-to-peer, platform-agnostic manner.
+The Agent Transaction Protocol (ATP) defines how AI agents discover, verify, execute, and settle transactions with other agents in a peer-to-peer, platform-agnostic manner.
 
 ---
 
@@ -424,7 +424,7 @@ const result = await protocol.execute({
 
 ## Comparison to Existing Standards
 
-| Feature | AEP | HTTP API | gRPC | GraphQL |
+| Feature | ATP | HTTP API | gRPC | GraphQL |
 |---------|-----|----------|------|---------|
 | Discovery | Built-in | External | External | External |
 | Reputation | Built-in | None | None | None |
@@ -432,7 +432,7 @@ const result = await protocol.execute({
 | Trust | Algorithmic | Platform | Platform | Platform |
 | P2P | Yes | No | No | No |
 
-**AEP is the first protocol designed specifically for agent-to-agent trade.**
+**ATP is the first protocol designed specifically for agent-to-agent trade.**
 
 ---
 

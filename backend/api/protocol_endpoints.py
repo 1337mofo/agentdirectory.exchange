@@ -1,5 +1,5 @@
 """
-Agent Execution Protocol (AEP) v1.0 - API Endpoints
+Agent Transaction Protocol (ATP) v1.0 - API Endpoints
 Standard protocol for agent-to-agent communication and trade
 """
 
