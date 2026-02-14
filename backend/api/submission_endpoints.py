@@ -50,31 +50,44 @@ async def submit_agent_for_review(
     db: Session = Depends(get_db)
 ):
     """
-    Public endpoint for agent submission
+    Public endpoint for agent submission with 100% agentic review
     
     Flow:
     1. Accept submission from web form
-    2. Store in database with pending_review status
-    3. Send notification to admin (Steve)
-    4. Return submission confirmation
-    
-    Admin reviews and approves via dashboard or API
+    2. Run agentic review (anti-spam, quality check, validation)
+    3. Auto-approve or auto-reject
+    4. Notify submitter of decision
+    5. Log to Steve via Telegram (summary only)
     """
     try:
-        # Create agent record with pending status
+        # Import agentic reviewer
+        from services.agentic_reviewer import AgenticReviewer
+        
+        # Run autonomous review
+        reviewer = AgenticReviewer(db)
+        submission_dict = {
+            'name': submission.name,
+            'description': submission.description,
+            'website': submission.website,
+            'email': submission.email,
+            'api_endpoint': submission.api_endpoint,
+            'capabilities': submission.capabilities
+        }
+        
+        should_approve, review_reason, quality_score = reviewer.review_submission(submission_dict)
+        
+        # Create agent record
         agent_id = str(uuid.uuid4())
         
-        # Convert agent_type from pricing model if needed
         from models.agent import AgentType
-        agent_type_enum = AgentType.API  # Default for submitted agents
+        agent_type_enum = AgentType.API
         
-        # Create pricing JSON
         pricing_data = {
             "model": submission.pricing.model,
             "price_usd": submission.pricing.price_usd
         }
         
-        # Create agent in database (inactive, pending review)
+        # Create agent with review decision
         new_agent = Agent(
             id=agent_id,
             name=submission.name,
@@ -84,16 +97,18 @@ async def submit_agent_for_review(
             api_endpoint=submission.api_endpoint,
             capabilities=submission.capabilities,
             pricing_model=pricing_data,
-            # Status fields
-            is_active=False,  # Not active until approved
-            verified=False,
-            pending_review=True,
+            # Status based on agentic review
+            is_active=should_approve,  # Auto-activate if approved
+            verified=should_approve,
+            pending_review=False,  # No manual review needed
             submission_source="web_form",
             # Metadata
             agent_type=agent_type_enum,
-            categories=None,  # Will be assigned during review
+            categories=None,  # Auto-assign from capabilities later
             auto_discovered=False,
-            quality_score=70,  # Default quality score for manual submissions
+            quality_score=quality_score,
+            review_reason=review_reason,
+            reviewed_at=datetime.utcnow(),
             created_at=datetime.utcnow()
         )
         
@@ -101,13 +116,36 @@ async def submit_agent_for_review(
         db.commit()
         db.refresh(new_agent)
         
-        # TODO: Send notification to Steve via Telegram
-        # await notify_admin_of_submission(submission, agent_id)
+        # Send notification to submitter
+        await notify_submitter_of_decision(
+            email=submission.email,
+            agent_name=submission.name,
+            approved=should_approve,
+            reason=review_reason,
+            quality_score=quality_score
+        )
+        
+        # Log to Steve (summary only, not every submission)
+        if not should_approve or quality_score >= 90:
+            # Only notify Steve of rejections or exceptional approvals
+            await notify_admin_of_review(
+                submission=submission,
+                agent_id=agent_id,
+                approved=should_approve,
+                reason=review_reason,
+                quality_score=quality_score
+            )
+        
+        # Response to submitter
+        if should_approve:
+            message = f"🎉 Your agent '{submission.name}' has been approved and is now live on Agent Directory Exchange! Quality score: {quality_score}/100. Check it out at https://agentdirectory.exchange/"
+        else:
+            message = f"Thank you for your submission. Unfortunately, '{submission.name}' did not meet our quality standards. Reason: {review_reason}. You can resubmit after addressing these issues."
         
         return AgentSubmissionResponse(
-            success=True,
-            message="Agent submitted successfully! We'll review it within 24-48 hours and contact you at the email provided.",
-            submission_id=agent_id
+            success=should_approve,
+            message=message,
+            submission_id=agent_id if should_approve else None
         )
         
     except Exception as e:
@@ -255,41 +293,145 @@ async def reject_submission(
         )
 
 
-async def notify_admin_of_submission(submission: AgentSubmission, agent_id: str):
+async def notify_admin_of_review(
+    submission: AgentSubmission,
+    agent_id: str,
+    approved: bool,
+    reason: str,
+    quality_score: int
+):
     """
-    Send Telegram notification to Steve about new submission
-    TODO: Integrate with Telegram bot
+    Send Telegram notification to Steve about agentic review
+    Only for rejections or exceptional approvals (90+ score)
     """
-    message = f"""
-🆕 New Agent Submission
+    import os
+    
+    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+    TELEGRAM_CHAT_ID = "1921452767"  # Steve Eagle
+    
+    if not TELEGRAM_BOT_TOKEN:
+        return  # Silently skip if not configured
+    
+    status_emoji = "✅" if approved else "❌"
+    status_text = "AUTO-APPROVED" if approved else "AUTO-REJECTED"
+    
+    message = f"""{status_emoji} **Agent Submission {status_text}**
 
-Name: {submission.name}
-Type: {submission.agent_type}
-Owner: {submission.owner_email}
+**{submission.name}**
+Quality Score: {quality_score}/100
 
-Description: {submission.description[:200]}...
+Owner: {submission.email}
+Website: {submission.website}
 
-Source: {submission.source_url}
+Decision: {reason}
 
-Review at: /api/v1/agents/submissions/{agent_id}
-Approve: /api/v1/agents/submissions/{agent_id}/approve
-Reject: /api/v1/agents/submissions/{agent_id}/reject
+Capabilities: {', '.join(submission.capabilities[:5])}
+
+{"✨ Now live on directory" if approved else "🚫 Not listed"}
 """
-    # TODO: Send via Telegram
-    pass
+    
+    try:
+        import requests
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        requests.post(url, json={
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": message,
+            "parse_mode": "Markdown"
+        }, timeout=5)
+    except Exception as e:
+        print(f"Telegram notification failed: {e}")
 
 
-async def notify_submitter_of_approval(email: str, agent_name: str):
+async def notify_submitter_of_decision(
+    email: str,
+    agent_name: str,
+    approved: bool,
+    reason: str,
+    quality_score: int
+):
     """
-    Email submitter that their agent was approved
-    TODO: Integrate with email service
+    Email submitter with agentic review decision
     """
-    pass
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    import os
+    
+    # Email configuration (GoDaddy SMTP)
+    SMTP_SERVER = "smtpout.secureserver.net"
+    SMTP_PORT = 587
+    FROM_EMAIL = "nova@agentdirectory.exchange"
+    FROM_PASSWORD = "1nf0AgNT2026!"  # This should be in env var
+    
+    try:
+        if approved:
+            subject = f"✅ Your agent '{agent_name}' is now live!"
+            body = f"""
+Hi there,
 
+Great news! Your agent "{agent_name}" has been approved and is now live on Agent Directory Exchange.
 
-async def notify_submitter_of_rejection(email: str, agent_name: str, reason: str):
-    """
-    Email submitter that their agent was rejected with reason
-    TODO: Integrate with email service
-    """
-    pass
+Quality Score: {quality_score}/100
+Review: {reason}
+
+Your agent is now discoverable at:
+https://agentdirectory.exchange/
+
+Next steps:
+• Share your agent listing with your network
+• Monitor performance via our analytics
+• Update your agent details anytime
+
+Questions? Just reply to this email.
+
+Best regards,
+Nova
+Agent Directory Exchange Team
+
+---
+This is an automated message from our agentic review system.
+"""
+        else:
+            subject = f"Submission Update: {agent_name}"
+            body = f"""
+Hi there,
+
+Thank you for submitting "{agent_name}" to Agent Directory Exchange.
+
+Our automated review system has flagged some issues that need attention:
+
+Quality Score: {quality_score}/100
+Review Feedback: {reason}
+
+What you can do:
+• Address the feedback above
+• Improve your agent's description and documentation
+• Resubmit when ready (we welcome resubmissions!)
+
+Need help? Reply to this email and we'll assist you.
+
+Best regards,
+Nova
+Agent Directory Exchange Team
+
+---
+This is an automated message from our agentic review system.
+"""
+        
+        msg = MIMEMultipart()
+        msg['From'] = f"Nova @ Agent Directory <{FROM_EMAIL}>"
+        msg['To'] = email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+        
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(FROM_EMAIL, FROM_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        
+        print(f"Email sent to {email}: {subject}")
+        
+    except Exception as e:
+        print(f"Email notification failed for {email}: {e}")
+        # Don't fail the submission if email fails

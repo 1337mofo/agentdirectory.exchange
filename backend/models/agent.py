@@ -83,6 +83,8 @@ class Agent(Base):
     approved_at = Column(DateTime)
     rejected_at = Column(DateTime)
     rejection_reason = Column(Text)
+    reviewed_at = Column(DateTime)  # Agentic review timestamp
+    review_reason = Column(Text)  # Agentic review feedback (approve or reject)
     
     # Discovery Data
     source_url = Column(String(500))  # GitHub, HuggingFace, etc.
