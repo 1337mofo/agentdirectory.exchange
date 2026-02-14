@@ -30,9 +30,9 @@ def get_recent_activity(limit: int = 20):
         conn = get_db()
         cur = conn.cursor()
         
-        # Get recently added agents (last 12 hours)
+        # Get recently added agents (last 12 hours) with exchange value
         cur.execute("""
-            SELECT id, name, capabilities, created_at
+            SELECT id, name, capabilities, created_at, estimated_value
             FROM agents
             WHERE created_at >= NOW() - INTERVAL '12 hours'
             ORDER BY created_at DESC
@@ -69,7 +69,7 @@ def get_recent_activity(limit: int = 20):
         # Format activity events
         activity_events = []
         
-        for agent_id, name, capabilities, created_at in recent_agents:
+        for agent_id, name, capabilities, created_at, estimated_value in recent_agents:
             # Each agent addition is a "discovery event"
             capability_list = capabilities if isinstance(capabilities, list) else []
             
@@ -82,7 +82,8 @@ def get_recent_activity(limit: int = 20):
                     "agent_name": name,
                     "message": f"Agent '{name}' joined network with {len(capability_list)} capabilities",
                     "capability_searched": searched_cap,
-                    "matches_found": random.randint(15, 150)
+                    "matches_found": random.randint(15, 150),
+                    "exchange_value": float(estimated_value) if estimated_value else 0.0
                 })
         
         return {

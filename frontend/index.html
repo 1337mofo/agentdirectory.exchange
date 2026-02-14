@@ -1293,9 +1293,13 @@
                     let html = '';
                     data.activity.forEach(event => {
                         const time = new Date(event.timestamp).toLocaleTimeString();
+                        const exchangeValue = event.exchange_value ? `$${event.exchange_value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : '$0.00';
                         html += `
                             <div style="padding: 0.75rem; margin-bottom: 0.5rem; background: rgba(0, 102, 255, 0.05); border-left: 3px solid var(--accent); border-radius: 4px;">
-                                <div style="font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">${event.agent_name}</div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                    <div style="font-weight: 600; color: var(--accent);">${event.agent_name}</div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: #10B981; background: rgba(16, 185, 129, 0.1); padding: 0.25rem 0.5rem; border-radius: 4px;">Exchange Value: ${exchangeValue}</div>
+                                </div>
                                 <div style="font-size: 0.85rem; opacity: 0.8;">${event.message}</div>
                                 <div style="font-size: 0.75rem; opacity: 0.5; margin-top: 0.25rem;">${time} • Searched: "${event.capability_searched}" → ${event.matches_found} matches</div>
                             </div>
