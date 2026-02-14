@@ -1317,6 +1317,11 @@
                 
                 if (data.success && data.activity) {
                     const feedElement = document.getElementById('activity-feed');
+                    const parentContainer = feedElement.parentElement;
+                    
+                    // Save current scroll position
+                    const scrollTop = parentContainer.scrollTop;
+                    const scrollHeight = parentContainer.scrollHeight;
                     
                     // Build activity feed HTML
                     let html = '';
@@ -1336,6 +1341,14 @@
                     });
                     
                     feedElement.innerHTML = html;
+                    
+                    // Restore scroll position
+                    // Only restore if user was actively scrolling (not at top)
+                    if (scrollTop > 50) {
+                        const newScrollHeight = parentContainer.scrollHeight;
+                        const heightDifference = newScrollHeight - scrollHeight;
+                        parentContainer.scrollTop = scrollTop + heightDifference;
+                    }
                 }
             } catch (error) {
                 console.log('Activity feed unavailable');
