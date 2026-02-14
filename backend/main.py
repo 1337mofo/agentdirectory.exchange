@@ -17,7 +17,7 @@ from models.listing import Listing, ListingType, ListingStatus
 from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
-from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints
+from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints, debug_endpoints
 # DISABLED: Causing 500 errors - need to fix database connection pattern
 # from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics
 
@@ -76,6 +76,7 @@ app.add_middleware(
 )
 
 # Include API routers
+app.include_router(debug_endpoints.router)  # DEBUG - REMOVE AFTER FIXING
 app.include_router(stats_endpoints.router)  # Platform statistics - agents, value, market data
 app.include_router(fulfillment_endpoints.router)
 app.include_router(stripe_endpoints.router)
