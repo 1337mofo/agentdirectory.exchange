@@ -221,13 +221,20 @@ async def discover_agents(request: DiscoverRequest):
     """
     conn = get_db_connection()
     
-    matches = match_agents_to_capabilities(
-        request.capabilities_needed,
-        request.constraints,
-        conn
-    )
+    if conn is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Database connection unavailable. Protocol endpoints require database access."
+        )
     
-    conn.close()
+    try:
+        matches = match_agents_to_capabilities(
+            request.capabilities_needed,
+            request.constraints,
+            conn
+        )
+    finally:
+        conn.close()
     
     if not matches:
         raise HTTPException(status_code=404, detail="No matching agents found")
@@ -255,6 +262,13 @@ async def verify_agent(agent_id: str):
     Verify agent identity and retrieve reputation data
     """
     conn = get_db_connection()
+    
+    if conn is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Database connection unavailable. Protocol endpoints require database access."
+        )
+    
     cur = conn.cursor()
     
     # Get agent data

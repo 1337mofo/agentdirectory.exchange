@@ -68,12 +68,20 @@ def get_db_connection():
     """
     Get raw psycopg2 database connection for protocol endpoints
     Used by protocol_endpoints, execution_tracking, performance_analytics, instrument_endpoints
+    
+    Returns None if connection fails (caller must handle)
     """
-    DATABASE_URL = os.getenv(
-        "DATABASE_URL",
-        "postgresql://user:password@localhost:5432/agent_marketplace"
-    )
-    return psycopg2.connect(DATABASE_URL)
+    try:
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        if not DATABASE_URL:
+            print("WARNING: DATABASE_URL not set, protocol endpoints will not work")
+            return None
+        
+        conn = psycopg2.connect(DATABASE_URL)
+        return conn
+    except Exception as e:
+        print(f"ERROR: Failed to connect to database: {e}")
+        return None
 
 
 def init_db():
