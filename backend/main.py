@@ -17,7 +17,9 @@ from models.listing import Listing, ListingType, ListingStatus
 from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
-from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints, instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics
+from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints
+# DISABLED: Causing 500 errors - need to fix database connection pattern
+# from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -83,10 +85,11 @@ app.include_router(category_endpoints.router)  # Category pages for high-volume 
 app.include_router(submission_endpoints.router)  # Public agent submissions with manual review
 app.include_router(crawler_endpoints.router)  # Automated crawler uploads with admin API key
 app.include_router(payment_endpoints.router)  # Solana USDC payments with wallet auth
-app.include_router(instrument_endpoints.router)  # Layer 1: Agent workflows and instruments
-app.include_router(protocol_endpoints.router)  # CRITICAL: Agent Execution Protocol (AEP) - The core infrastructure
-app.include_router(execution_tracking.router)  # Phase 1.4: Transaction tracking - records every execution
-app.include_router(performance_analytics.router)  # Phase 1.4: THE DATA LAYER - reputation & valuations (our moat)
+# DISABLED: Causing 500 errors on production
+# app.include_router(instrument_endpoints.router)  # Layer 1: Agent workflows and instruments
+# app.include_router(protocol_endpoints.router)  # CRITICAL: Agent Execution Protocol (AEP) - The core infrastructure  
+# app.include_router(execution_tracking.router)  # Phase 1.4: Transaction tracking - records every execution
+# app.include_router(performance_analytics.router)  # Phase 1.4: THE DATA LAYER - reputation & valuations (our moat)
 app.include_router(admin_endpoints.router)  # Admin operations (database, health checks)
 app.include_router(seed_endpoint.router)  # Seed initial agents (one-time use)
 
