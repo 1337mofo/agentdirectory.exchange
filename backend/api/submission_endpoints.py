@@ -312,7 +312,7 @@ async def notify_admin_of_review(
     if not TELEGRAM_BOT_TOKEN:
         return  # Silently skip if not configured
     
-    status_emoji = "✅" if approved else "❌"
+    status_emoji = "[OK]" if approved else "[ERROR]"
     status_text = "AUTO-APPROVED" if approved else "AUTO-REJECTED"
     
     message = f"""{status_emoji} **Agent Submission {status_text}**
@@ -369,7 +369,7 @@ async def notify_submitter_of_decision(
     
     try:
         if approved:
-            subject = f"✅ Your agent '{agent_name}' is now live!"
+            subject = f"[OK] Your agent '{agent_name}' is now live!"
             body = f"""
 Hi there,
 

@@ -218,5 +218,5 @@ if __name__ == "__main__":
     print(f"\n[RPC] Connected to: {SOLANA_RPC_URL}")
     print(f"[USDC] Mint: {USDC_MINT}")
     
-    print("\n✅ Payment processor initialized")
+    print("\n[OK] Payment processor initialized")
     print("="*60)

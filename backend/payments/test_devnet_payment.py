@@ -41,7 +41,7 @@ def main():
         treasury_keypair=treasury_keypair,
         rpc_url="https://api.devnet.solana.com"
     )
-    print("   Connected ✓")
+    print("   Connected [OK]")
     
     # Check treasury balance
     print("\n[3] Checking treasury balance...")
@@ -49,7 +49,7 @@ def main():
     print(f"   Balance: ${balance:.2f} USDC")
     
     if balance == 0:
-        print("\n   ⚠️  Treasury needs funding!")
+        print("\n   [WARN]  Treasury needs funding!")
         print(f"\n   INSTRUCTIONS:")
         print(f"   1. Get test SOL (for gas):")
         print(f"      solana airdrop 2 {treasury_data['public_key']} --url devnet")
@@ -74,7 +74,7 @@ def main():
             memo="Test payment - devnet"
         )
         
-        print(f"   ✓ Payment sent!")
+        print(f"   [OK] Payment sent!")
         print(f"   Signature: {signature[:8]}...{signature[-8:]}")
         print(f"\n   View on Solscan:")
         print(f"   https://solscan.io/tx/{signature}?cluster=devnet")
@@ -84,9 +84,9 @@ def main():
         confirmed = processor.verify_transaction(signature, max_wait_seconds=30)
         
         if confirmed:
-            print("   ✓ Transaction confirmed on-chain!")
+            print("   [OK] Transaction confirmed on-chain!")
         else:
-            print("   ⚠️  Transaction not confirmed (may still be pending)")
+            print("   [WARN]  Transaction not confirmed (may still be pending)")
         
         # Check recipient balance
         print("\n[7] Checking recipient balance...")
@@ -94,9 +94,9 @@ def main():
         print(f"   Recipient balance: ${recipient_balance:.2f} USDC")
         
         if recipient_balance > 0:
-            print("\n   ✅ PAYMENT FLOW WORKS!")
+            print("\n   [OK] PAYMENT FLOW WORKS!")
         else:
-            print("\n   ⚠️  Payment sent but balance not updated yet (wait a few seconds)")
+            print("\n   [WARN]  Payment sent but balance not updated yet (wait a few seconds)")
         
     except Exception as e:
         print(f"   ✗ Payment failed: {e}")

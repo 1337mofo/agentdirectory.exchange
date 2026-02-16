@@ -282,7 +282,7 @@ def get_stats():
     instruments_count = capabilities_count if capabilities_count > 0 else 91401
     
     # Calculate possible 3-agent combinations
-    # Formula: N × (N-1) × (N-2) / 6
+    # Formula: N x (N-1) x (N-2) / 6
     if agents_count >= 3:
         combinations = (agents_count * (agents_count - 1) * (agents_count - 2)) // 6
     else:
@@ -627,13 +627,13 @@ def startup_event():
     """Initialize database on startup"""
     try:
         init_db()
-        print("✓ Database initialized")
+        print("[OK] Database initialized")
     except Exception as e:
-        print(f"⚠️  Database not available: {e}")
+        print(f"[WARN] Database not available: {e}")
         print("   API will start anyway - add PostgreSQL database in Railway to enable full functionality")
     
-    print("✓ Agent Directory API running")
-    print("🦅 The Global Agent Stock Exchange")
+    print("[OK] Agent Directory API running")
+    print("[EAGLE] The Global Agent Stock Exchange")
 
 
 # ==========================================

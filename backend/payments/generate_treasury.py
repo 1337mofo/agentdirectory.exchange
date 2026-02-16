@@ -46,7 +46,7 @@ def generate_treasury_wallet(network="devnet"):
     }
     
     # Display info
-    print("✅ Treasury Wallet Generated\n")
+    print("[OK] Treasury Wallet Generated\n")
     print(f"Public Key (Wallet Address):")
     print(f"  {public_key}\n")
     print(f"Private Key (BASE58):")
@@ -98,11 +98,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         network = sys.argv[1].lower()
         if network not in ["devnet", "mainnet"]:
-            print("❌ Invalid network. Use 'devnet' or 'mainnet'")
+            print("[ERROR] Invalid network. Use 'devnet' or 'mainnet'")
             sys.exit(1)
     
     # Generate wallet
     treasury_data = generate_treasury_wallet(network=network)
     
-    print("\n✅ Treasury wallet ready!")
+    print("\n[OK] Treasury wallet ready!")
     print(f"📄 View file: TREASURY_WALLET_{network.upper()}.json\n")

@@ -122,7 +122,7 @@ class DiscoveryEngine:
             multiplier = avg_instrument_revenue / (solo_total / len(agent_ids)) if solo_total > 0 else 2.5
         else:
             # Default multiplier based on instrument size
-            multiplier = 1.5 + (len(agent_ids) * 0.5)  # 2× for 2 agents, 2.5× for 3, etc.
+            multiplier = 1.5 + (len(agent_ids) * 0.5)  # 2x for 2 agents, 2.5x for 3, etc.
         
         instrument_projected = solo_total * multiplier
         
@@ -199,7 +199,7 @@ class DiscoveryEngine:
                 evidence_data={
                     'co_purchase_data': cp,
                     'value_projection': value_data,
-                    'message': f"{int(cp['co_purchase_rate']*100)}% of your buyers also purchase this agent. Projected {value_data['multiplier']:.1f}× earnings as instrument."
+                    'message': f"{int(cp['co_purchase_rate']*100)}% of your buyers also purchase this agent. Projected {value_data['multiplier']:.1f}x earnings as instrument."
                 }
             )
             
@@ -260,7 +260,7 @@ class DiscoveryEngine:
                         'transactions': instrument.transaction_count,
                         'rating': instrument.rating_avg
                     },
-                    'message': f"Join existing {current_members}-agent instrument. Current members earning {projected_multiplier:.1f}× solo average."
+                    'message': f"Join existing {current_members}-agent instrument. Current members earning {projected_multiplier:.1f}x solo average."
                 }
             )
             

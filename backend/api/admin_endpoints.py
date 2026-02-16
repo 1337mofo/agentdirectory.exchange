@@ -91,7 +91,7 @@ async def run_migrations(authorization: str = Header(None)) -> Dict[str, Any]:
             CREATE INDEX IF NOT EXISTS idx_agents_slug ON agents(slug);
         """)
         conn.commit()
-        results.append("✓ agents table ready with category columns")
+        results.append("[OK] agents table ready with category columns")
         
         # Migration 2: categories table
         results.append("Creating agent_categories table...")
@@ -108,7 +108,7 @@ async def run_migrations(authorization: str = Header(None)) -> Dict[str, Any]:
             );
         """)
         conn.commit()
-        results.append("✓ agent_categories table created")
+        results.append("[OK] agent_categories table created")
         
         # Migration 3: Check if categories exist
         cursor.execute("SELECT COUNT(*) FROM agent_categories")
@@ -125,11 +125,11 @@ async def run_migrations(authorization: str = Header(None)) -> Dict[str, Any]:
                 
                 cursor.execute("SELECT COUNT(*) FROM agent_categories")
                 count = cursor.fetchone()[0]
-                results.append(f"✓ {count} categories inserted")
+                results.append(f"[OK] {count} categories inserted")
             except FileNotFoundError:
                 results.append("⚠ Categories file not found (skip in local dev)")
         else:
-            results.append(f"✓ {count} categories already exist")
+            results.append(f"[OK] {count} categories already exist")
         
         # Migration 4: transactions table
         results.append("Creating transactions table...")
@@ -145,7 +145,7 @@ async def run_migrations(authorization: str = Header(None)) -> Dict[str, Any]:
             );
         """)
         conn.commit()
-        results.append("✓ transactions table created")
+        results.append("[OK] transactions table created")
         
         cursor.close()
         conn.close()

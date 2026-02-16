@@ -13,7 +13,7 @@ ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", None)
 
 # Fallback for development (will be overridden by environment variable)
 if not ADMIN_API_KEY:
-    print("⚠️  WARNING: ADMIN_API_KEY not set in environment. Using development fallback.")
+    print("[WARN]  WARNING: ADMIN_API_KEY not set in environment. Using development fallback.")
     ADMIN_API_KEY = "dev_eagle_admin_key_change_in_production"
 
 

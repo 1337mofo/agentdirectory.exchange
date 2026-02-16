@@ -131,7 +131,7 @@ class ArbitrageFulfillmentEngine:
                 # Log success
                 self.log_fulfillment(transaction_id, 'success', result)
                 
-                print(f"\n✅ Transaction {transaction_id} completed successfully")
+                print(f"\n[OK] Transaction {transaction_id} completed successfully")
                 
                 return result
             else:
@@ -185,7 +185,7 @@ class ArbitrageFulfillmentEngine:
             if response.status_code == 200:
                 result_data = response.json()
                 
-                print(f"✅ RapidAPI call successful")
+                print(f"[OK] RapidAPI call successful")
                 print(f"Result: {json.dumps(result_data, indent=2)[:200]}...\n")
                 
                 return {
@@ -237,7 +237,7 @@ class ArbitrageFulfillmentEngine:
             if response.status_code == 200:
                 result_data = response.json()
                 
-                print(f"✅ Hugging Face call successful\n")
+                print(f"[OK] Hugging Face call successful\n")
                 
                 return {
                     'success': True,
@@ -274,7 +274,7 @@ class ArbitrageFulfillmentEngine:
             'delivered_at': datetime.utcnow().isoformat()
         }
         
-        print(f"✅ GitHub repository access delivered: {repo_url}\n")
+        print(f"[OK] GitHub repository access delivered: {repo_url}\n")
         
         return {
             'success': True,
@@ -362,7 +362,7 @@ class ArbitrageFulfillmentEngine:
         transaction.metadata['manual_task_queued_at'] = datetime.utcnow().isoformat()
         self.db.commit()
         
-        print(f"✅ Task queued for manual fulfillment")
+        print(f"[OK] Task queued for manual fulfillment")
         print(f"Queue: {self.manual_queue_file}\n")
         
         return {
@@ -427,7 +427,7 @@ DO NOT exceed budget of ${price:.2f}
         
         self.db.commit()
         
-        print(f"✅ Results delivered to buyer (transaction {transaction_id})")
+        print(f"[OK] Results delivered to buyer (transaction {transaction_id})")
         
         return {'success': True, 'delivered': True}
     
@@ -439,7 +439,7 @@ DO NOT exceed budget of ${price:.2f}
         """
         Handle fulfillment failure - potentially refund buyer
         """
-        print(f"\n❌ Fulfillment failed: {error_result.get('error')}\n")
+        print(f"\n[ERROR] Fulfillment failed: {error_result.get('error')}\n")
         
         transaction.status = TransactionStatus.FAILED
         transaction.metadata['fulfillment_status'] = FulfillmentStatus.FAILED
@@ -463,10 +463,10 @@ DO NOT exceed budget of ${price:.2f}
                 transaction.metadata['refund_id'] = refund.id
                 transaction.metadata['refunded_at'] = datetime.utcnow().isoformat()
                 
-                print(f"✅ Refund issued: {refund.id}\n")
+                print(f"[OK] Refund issued: {refund.id}\n")
             
             except Exception as e:
-                print(f"❌ Refund failed: {str(e)}\n")
+                print(f"[ERROR] Refund failed: {str(e)}\n")
                 transaction.metadata['refund_error'] = str(e)
         
         self.db.commit()
@@ -489,7 +489,7 @@ DO NOT exceed budget of ${price:.2f}
         Convert Hugging Face Space URL to API endpoint
         """
         # https://huggingface.co/spaces/username/space-name
-        # → https://username-space-name.hf.space/api/predict
+        # -> https://username-space-name.hf.space/api/predict
         
         if '/spaces/' in space_url:
             parts = space_url.split('/spaces/')[-1].split('/')

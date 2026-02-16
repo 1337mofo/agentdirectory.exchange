@@ -42,7 +42,7 @@ async def get_platform_stats(db: Session = Depends(get_db)):
             ) AS all_capabilities
         """)).fetchone()
         
-        # Calculate combinations (simplified: agents × instruments)
+        # Calculate combinations (simplified: agents x instruments)
         combinations = (agent_stats[0] or 0) * (instrument_stats[0] or 1)
         
         return {

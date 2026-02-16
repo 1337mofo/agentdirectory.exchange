@@ -159,5 +159,5 @@ if __name__ == "__main__":
     print(f"   USDC Balance: ${balance:.2f}")
     
     print("\n" + "="*60)
-    print("✅ Wallet manager working!")
+    print("[OK] Wallet manager working!")
     print("="*60)

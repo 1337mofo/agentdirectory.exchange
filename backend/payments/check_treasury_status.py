@@ -57,7 +57,7 @@ def main():
         print("\n   Need SOL for gas fees!")
         print(f"   Run: solana airdrop 2 {public_key} --url devnet")
     else:
-        print("   ✓ Has SOL for transactions")
+        print("   [OK] Has SOL for transactions")
     
     # Check USDC balance (simplified - just show instructions)
     print("\n[4] USDC Balance Check:")
@@ -73,17 +73,17 @@ def main():
     print("=" * 70)
     
     if sol_balance > 0:
-        print("✓ Treasury wallet exists")
-        print("✓ Connected to devnet")
-        print("✓ Has SOL for gas")
+        print("[OK] Treasury wallet exists")
+        print("[OK] Connected to devnet")
+        print("[OK] Has SOL for gas")
         print("⏳ Need to fund with USDC")
-        print("\nReady for USDC funding →")
+        print("\nReady for USDC funding ->")
     else:
-        print("✓ Treasury wallet exists")
-        print("✓ Connected to devnet")  
+        print("[OK] Treasury wallet exists")
+        print("[OK] Connected to devnet")  
         print("⏳ Need SOL for gas")
         print("⏳ Need USDC for payments")
-        print("\nReady for funding →")
+        print("\nReady for funding ->")
     
     print("\n" + "=" * 70)
 

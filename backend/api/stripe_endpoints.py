@@ -217,7 +217,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         if transaction_id:
             transaction = db.query(Transaction).filter(Transaction.id == transaction_id).first()
             if transaction:
-                # ⚠️ CRITICAL: Payment confirmed by Stripe - NOW we can fulfill
+                # [WARN] CRITICAL: Payment confirmed by Stripe - NOW we can fulfill
                 transaction.status = TransactionStatus.PROCESSING  # Payment received, fulfilling...
                 transaction.metadata = transaction.metadata or {}
                 transaction.metadata['payment_confirmed_at'] = result['processed_at']
@@ -226,7 +226,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 # Check if this is an arbitrage listing
                 listing = db.query(Listing).filter(Listing.id == transaction.listing_id).first()
                 if listing and listing.metadata and listing.metadata.get('arbitrage_listing'):
-                    # ONLY NOW: Payment confirmed → Trigger fulfillment
+                    # ONLY NOW: Payment confirmed -> Trigger fulfillment
                     print(f"[WEBHOOK] Payment confirmed for {transaction_id} - triggering fulfillment")
                     
                     from services.arbitrage_fulfillment import ArbitrageFulfillmentEngine
