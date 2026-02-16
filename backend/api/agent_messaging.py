@@ -386,7 +386,7 @@ def create_work_order(
         subject=f"Work Order: {request.title}",
         body=request.description,
         status=MessageStatus.PENDING,
-        metadata={"work_order_id": str(work_order.id)}
+        message_metadata={"work_order_id": str(work_order.id)}
     )
     db.add(message)
     work_order.message_id = message.id

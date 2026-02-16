@@ -47,7 +47,7 @@ class AgentMessage(Base):
     body = Column(Text)  # Message content
     
     # Metadata
-    metadata = Column(JSON)  # Additional data (work order details, attachments, etc.)
+    message_metadata = Column(JSON)  # Additional data (work order details, attachments, etc.)
     priority = Column(Integer, default=0)  # Higher = more important
     expires_at = Column(DateTime)  # Optional expiration
     
@@ -156,7 +156,7 @@ class AgentChannel(Base):
     max_members = Column(Integer)
     
     # Metadata
-    metadata = Column(JSON)
+    channel_metadata = Column(JSON)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
