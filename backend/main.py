@@ -18,7 +18,7 @@ from models.transaction import Transaction, TransactionType, TransactionStatus
 
 # Import API routers
 from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints, debug_endpoints
-from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics, activity_feed
+from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics, activity_feed, agent_messaging, agent_registration, monitor_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -90,6 +90,9 @@ app.include_router(protocol_endpoints.router)  # CRITICAL: Agent Transaction Pro
 app.include_router(execution_tracking.router)  # Phase 1.4: Transaction tracking - records every execution
 app.include_router(performance_analytics.router)  # Phase 1.4: THE DATA LAYER - reputation & valuations (our moat)
 app.include_router(activity_feed.router)  # Live agentic activity feed - real-time discovery events
+app.include_router(agent_messaging.router)  # CRITICAL: Agent-to-agent messaging - pings, work orders, chat
+app.include_router(agent_registration.router)  # Agent registration & API key management
+app.include_router(monitor_endpoints.router)  # AI Communication Monitor - Eagle Command Center
 app.include_router(admin_endpoints.router)  # Admin operations (database, health checks)
 app.include_router(seed_endpoint.router)  # Seed initial agents (one-time use)
 
@@ -207,6 +210,18 @@ def serve_submit_agent_page():
         return FileResponse(frontend_path, media_type="text/html")
     
     return {"detail": "Submit agent page not found"}
+
+@app.get("/theaerie")
+@app.get("/theaerie/")
+def serve_monitor_page():
+    """Serve AI Communication Monitor - Eagle Command Center"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    frontend_path = os.path.join(base_dir, "frontend", "monitor.html")
+    
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path, media_type="text/html")
+    
+    return {"detail": "Monitor page not found"}
 
 # ==========================================
 # Health Check
