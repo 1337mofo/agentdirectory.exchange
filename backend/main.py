@@ -143,6 +143,38 @@ frontend_dir = os.path.join(base_dir, "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 
+# Basic authentication for monitoring portal
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from secrets import compare_digest
+
+security = HTTPBasic()
+
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify basic auth credentials for monitoring portal"""
+    correct_username = os.getenv("MONITOR_USERNAME", "eagle")
+    correct_password = os.getenv("MONITOR_PASSWORD", "N0v4B00ts2026")
+    
+    is_correct_username = compare_digest(credentials.username, correct_username)
+    is_correct_password = compare_digest(credentials.password, correct_password)
+    
+    if not (is_correct_username and is_correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+# Serve monitoring portal
+@app.get("/theaerie")
+def serve_monitor_portal(username: str = Depends(verify_credentials)):
+    """Serve AI communication monitoring portal (password protected)"""
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    monitor_path = os.path.join(base_dir, "frontend", "monitor.html")
+    if os.path.exists(monitor_path):
+        return FileResponse(monitor_path)
+    raise HTTPException(status_code=404, detail="Monitor portal not found")
+
 # Serve landing page
 @app.get("/")
 def serve_landing_page():
