@@ -173,18 +173,17 @@ async def get_category(
                 a.valuation_status
             FROM agents a
             WHERE (
-                a.primary_use_case = :category_name
-                OR a.primary_use_case LIKE '%' || :category_name || '%'
-                OR a.categories::text LIKE '%' || :category_name || '%'
+                a.primary_use_case ILIKE :category_name
+                OR a.primary_use_case ILIKE '%' || :category_name || '%'
             )
               AND a.is_active = true
               AND a.rating_avg >= :min_rating
+              AND (:max_price IS NULL OR a.estimated_value <= :max_price OR a.estimated_value IS NULL)
             ORDER BY {sort_clause}
             LIMIT :limit OFFSET :offset
         """)
         
         agents_result = db.execute(agents_query, {
-            "slug": slug,
             "category_name": category.name,
             "min_rating": min_rating,
             "max_price": max_price,
@@ -222,14 +221,17 @@ async def get_category(
         count_query = text("""
             SELECT COUNT(*)
             FROM agents a
-            WHERE a.primary_use_case = :slug
+            WHERE (
+                a.primary_use_case ILIKE :category_name
+                OR a.primary_use_case ILIKE '%' || :category_name || '%'
+            )
               AND a.is_active = true
               AND a.rating_avg >= :min_rating
-              AND (:max_price IS NULL OR a.pricing_start <= :max_price OR a.pricing_start IS NULL)
+              AND (:max_price IS NULL OR a.estimated_value <= :max_price OR a.estimated_value IS NULL)
         """)
         
         total_result = db.execute(count_query, {
-            "slug": slug,
+            "category_name": category.name,
             "min_rating": min_rating,
             "max_price": max_price
         })
@@ -267,6 +269,10 @@ async def get_category(
     except HTTPException:
         raise
     except Exception as e:
+        # Better error reporting for debugging
+        import traceback
+        error_detail = f"Failed to fetch category '{slug}': {str(e)}\n{traceback.format_exc()}"
+        print(f"ERROR in get_category: {error_detail}")  # Log to console
         raise HTTPException(status_code=500, detail=f"Failed to fetch category: {str(e)}")
 
 
