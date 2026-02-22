@@ -19,6 +19,7 @@ from models.transaction import Transaction, TransactionType, TransactionStatus
 # Import API routers
 from api import fulfillment_endpoints, stripe_endpoints, referral_endpoints, performance_endpoints, category_endpoints, submission_endpoints, crawler_endpoints, payment_endpoints, admin_endpoints, seed_endpoint, stats_endpoints, debug_endpoints
 from api import instrument_endpoints, protocol_endpoints, execution_tracking, performance_analytics, activity_feed, agent_messaging, agent_registration, monitor_endpoints
+from api import tool_endpoints, group_buying_endpoints, wallet_topup_endpoints
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -65,6 +66,13 @@ We enable peer-to-peer agentic trade that creates valuable instruments that are 
     }
 )
 
+# Referral embedding middleware - injects referral data in every API response
+try:
+    from middleware.referral_middleware import ReferralEmbeddingMiddleware
+    app.add_middleware(ReferralEmbeddingMiddleware)
+except ImportError:
+    pass  # Middleware optional during development
+
 # CORS Configuration (allow all for now, restrict in production)
 app.add_middleware(
     CORSMiddleware,
@@ -95,6 +103,9 @@ app.include_router(agent_registration.router)  # Agent registration & API key ma
 app.include_router(monitor_endpoints.router)  # AI Communication Monitor - Eagle Command Center
 app.include_router(admin_endpoints.router)  # Admin operations (database, health checks)
 app.include_router(seed_endpoint.router)  # Seed initial agents (one-time use)
+app.include_router(tool_endpoints.router)  # MCP Tool marketplace - list, search, install, meter
+app.include_router(group_buying_endpoints.router)  # Group buying pools - Costco for agents
+app.include_router(wallet_topup_endpoints.router)  # Auto top-up wallets - zero friction payments
 
 
 # Pydantic Schemas for Request/Response
@@ -152,7 +163,14 @@ security = HTTPBasic()
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify basic auth credentials for monitoring portal"""
     correct_username = os.getenv("MONITOR_USERNAME", "eagle")
-    correct_password = os.getenv("MONITOR_PASSWORD", "N0v4B00ts2026")
+    correct_password = os.getenv("MONITOR_PASSWORD")
+    
+    if not correct_password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Monitor password not configured",
+            headers={"WWW-Authenticate": "Basic"},
+        )
     
     is_correct_username = compare_digest(credentials.username, correct_username)
     is_correct_password = compare_digest(credentials.password, correct_password)
@@ -278,10 +296,6 @@ def get_stats():
     """
     import psycopg2
     
-    # TEMPORARY: Return old numbers (2,179 agents before database crash) until we surpass them
-    # This shows investors the real traction we had before the incident
-    OLD_AGENT_COUNT = 2179
-    
     try:
         # Check real database count
         DATABASE_URL = os.getenv("DATABASE_URL")
@@ -290,7 +304,7 @@ def get_stats():
         
         # Count all agents (simplified query - no is_active column required)
         cur.execute("SELECT COUNT(*) FROM agents")
-        real_agents_count = cur.fetchone()[0]
+        agents_count = cur.fetchone()[0]
         
         # Count total capabilities across all agents (Agent Combinator Capabilities)
         cur.execute("""
@@ -302,16 +316,12 @@ def get_stats():
         
         conn.close()
         
-        # Use real count if we've surpassed the old number, otherwise show old number
-        agents_count = max(real_agents_count, OLD_AGENT_COUNT)
-        
     except Exception as e:
-        # If database fails, show old numbers (better than showing zero for investors)
-        agents_count = OLD_AGENT_COUNT
-        capabilities_count = 91401  # Fallback to last known count
+        agents_count = 0
+        capabilities_count = 0
     
     # Use capabilities count as instruments_listed
-    instruments_count = capabilities_count if capabilities_count > 0 else 91401
+    instruments_count = capabilities_count
     
     # Calculate possible 3-agent combinations
     # Formula: N x (N-1) x (N-2) / 6
@@ -606,7 +616,7 @@ def create_purchase(transaction_data: TransactionCreate, db: Session = Depends(g
     seller = db.query(Agent).filter(Agent.id == listing.seller_agent_id).first()
     
     # Calculate commission (get from seller's subscription tier)
-    commission_rate = 0.15  # Default 15%, would vary by tier
+    commission_rate = float(os.getenv("PLATFORM_COMMISSION_RATE", "0.06"))
     
     # Create transaction
     transaction = Transaction(
