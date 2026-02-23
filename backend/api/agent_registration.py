@@ -94,7 +94,7 @@ class AgentAuthStatus(BaseModel):
 # ============================================================================
 
 @router.post("/register", response_model=AgentRegistrationResponse, status_code=status.HTTP_201_CREATED)
-async def register_agent(
+def register_agent(
     registration: AgentRegistration,
     request: Request,
     db: Session = Depends(get_db)
@@ -133,7 +133,7 @@ async def register_agent(
     client_ip = get_client_ip(request)
     
     # Check IP signup limit (5 per day)
-    ip_allowed = await check_ip_signup_limit(client_ip, db)
+    ip_allowed = check_ip_signup_limit(client_ip, db)
     if not ip_allowed:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -141,7 +141,7 @@ async def register_agent(
         )
     
     # Check disposable email
-    is_disposable = await is_disposable_email(registration.owner_email, db)
+    is_disposable = is_disposable_email(registration.owner_email, db)
     if is_disposable:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -149,7 +149,7 @@ async def register_agent(
         )
     
     # Check daily platform spending cap
-    cap_ok = await check_daily_spending_cap(db)
+    cap_ok = check_daily_spending_cap(db)
     if not cap_ok:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -201,7 +201,7 @@ async def register_agent(
     db.refresh(agent)
     
     # Record IP signup
-    await record_ip_signup(client_ip, db)
+    record_ip_signup(client_ip, db)
     
     return AgentRegistrationResponse(
         success=True,

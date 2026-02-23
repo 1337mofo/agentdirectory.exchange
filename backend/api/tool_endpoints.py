@@ -371,7 +371,7 @@ async def execute_tool(
     start_time = time.time()
     
     # Check rate limits
-    limit_check = await check_rate_limit(agent, db)
+    limit_check = check_rate_limit(agent, db)
     
     if not limit_check["allowed"]:
         raise HTTPException(
@@ -411,7 +411,7 @@ async def execute_tool(
         
         # Consume call credit
         cost_usd = per_call_price or 0.005  # Default to $0.005 if not set
-        await consume_call_credit(agent, cost_usd, db)
+        consume_call_credit(agent, cost_usd, db)
         
         # Execute tool via HTTP proxy
         try:

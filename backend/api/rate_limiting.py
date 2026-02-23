@@ -64,7 +64,7 @@ def is_private_ip(ip_address: str) -> bool:
         return False
 
 
-async def check_ip_signup_limit(ip_address: str, db: Session) -> bool:
+def check_ip_signup_limit(ip_address: str, db: Session) -> bool:
     """
     Check if IP has exceeded daily signup limit (5 per day)
     
@@ -100,7 +100,7 @@ async def check_ip_signup_limit(ip_address: str, db: Session) -> bool:
     return True
 
 
-async def record_ip_signup(ip_address: str, db: Session):
+def record_ip_signup(ip_address: str, db: Session):
     """
     Record a signup from IP address
     
@@ -129,7 +129,7 @@ async def record_ip_signup(ip_address: str, db: Session):
 # DISPOSABLE EMAIL BLOCKING
 # ============================================================================
 
-async def is_disposable_email(email: str, db: Session) -> bool:
+def is_disposable_email(email: str, db: Session) -> bool:
     """
     Check if email domain is in disposable blacklist
     
@@ -159,7 +159,7 @@ async def is_disposable_email(email: str, db: Session) -> bool:
 # DAILY PLATFORM SPENDING CAP
 # ============================================================================
 
-async def check_daily_spending_cap(db: Session) -> bool:
+def check_daily_spending_cap(db: Session) -> bool:
     """
     Check if platform has exceeded daily free tier spending cap ($50)
     
@@ -188,7 +188,7 @@ async def check_daily_spending_cap(db: Session) -> bool:
     return not cap_reached and total_spending < cap
 
 
-async def record_free_tier_usage(cost_usd: float, db: Session):
+def record_free_tier_usage(cost_usd: float, db: Session):
     """
     Record free tier usage and check if cap reached
     
@@ -251,7 +251,7 @@ def refill_hourly_calls(agent: Agent, db: Session):
         db.commit()
 
 
-async def check_rate_limit(agent: Agent, db: Session) -> dict:
+def check_rate_limit(agent: Agent, db: Session) -> dict:
     """
     Check if agent is within rate limits
     
@@ -331,7 +331,7 @@ async def check_rate_limit(agent: Agent, db: Session) -> dict:
     }
 
 
-async def consume_call_credit(agent: Agent, cost_usd: float, db: Session):
+def consume_call_credit(agent: Agent, cost_usd: float, db: Session):
     """
     Consume one call credit from agent's balance
     
@@ -354,7 +354,7 @@ async def consume_call_credit(agent: Agent, cost_usd: float, db: Session):
         agent.daily_spending_exposure += cost_usd
         
         # Record platform-wide free tier usage
-        await record_free_tier_usage(cost_usd, db)
+        record_free_tier_usage(cost_usd, db)
         
         db.commit()
         return
@@ -370,7 +370,7 @@ async def consume_call_credit(agent: Agent, cost_usd: float, db: Session):
 # FASTAPI DEPENDENCY
 # ============================================================================
 
-async def require_rate_limit(agent: Agent, db: Session):
+def require_rate_limit(agent: Agent, db: Session):
     """
     FastAPI dependency that enforces rate limits
     
@@ -387,7 +387,7 @@ async def require_rate_limit(agent: Agent, db: Session):
     Raises:
         HTTPException: 429 if rate limit exceeded
     """
-    limit_check = await check_rate_limit(agent, db)
+    limit_check = check_rate_limit(agent, db)
     
     if not limit_check["allowed"]:
         raise HTTPException(
