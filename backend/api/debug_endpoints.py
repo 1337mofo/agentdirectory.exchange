@@ -1,51 +1,83 @@
 """
-DEBUG ENDPOINTS - REMOVE AFTER FIXING
+Debug Endpoints - Temporary debugging for rate limiting system
 """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import text
-import os
-
 from database.base import get_db
+import traceback
 
-router = APIRouter(prefix="/api/v1/debug", tags=["debug"])
+router = APIRouter(prefix="/api/v1/debug", tags=["Debug"])
 
 
-@router.get("/db-test")
-async def test_database(db: Session = Depends(get_db)):
-    """Test database connection and query"""
+@router.get("/test-rate-limiting")
+def test_rate_limiting_import():
+    """Test if rate limiting module imports correctly"""
     try:
-        if db is None:
-            return {
-                "status": "error",
-                "message": "Database session is None (get_db yielded None)",
-                "DATABASE_URL": os.getenv("DATABASE_URL", "NOT SET")[:50] + "..."
-            }
-        
-        # Try simple query
-        result = db.execute(text("SELECT COUNT(*) FROM agents WHERE is_active = true")).scalar()
-        
+        from api import rate_limiting
         return {
-            "status": "success",
-            "agent_count": result,
-            "DATABASE_URL_set": os.getenv("DATABASE_URL") is not None,
-            "db_session_valid": db is not None
+            "status": "ok",
+            "module": "rate_limiting imported successfully",
+            "functions": [
+                "get_client_ip",
+                "check_ip_signup_limit",
+                "is_disposable_email",
+                "check_daily_spending_cap"
+            ]
         }
     except Exception as e:
         return {
             "status": "error",
-            "error_type": str(type(e).__name__),
-            "error_message": str(e),
-            "DATABASE_URL_set": os.getenv("DATABASE_URL") is not None
+            "error": str(e),
+            "traceback": traceback.format_exc()
         }
 
 
-@router.get("/env-check")
-async def check_environment():
-    """Check environment variables"""
-    return {
-        "DATABASE_URL_exists": os.getenv("DATABASE_URL") is not None,
-        "DATABASE_URL_preview": os.getenv("DATABASE_URL", "NOT SET")[:60] + "...",
-        "RAILWAY_ENVIRONMENT": os.getenv("RAILWAY_ENVIRONMENT", "NOT SET"),
-        "all_env_vars": list(os.environ.keys())[:20]  # First 20 env var names
-    }
+@router.post("/test-registration-flow")
+def test_registration_flow(request: Request, db: Session = Depends(get_db)):
+    """Test registration flow step by step"""
+    results = {}
+    
+    # Test 1: Import rate limiting
+    try:
+        from api.rate_limiting import get_client_ip
+        results["import"] = "OK"
+    except Exception as e:
+        results["import"] = f"FAILED: {e}"
+        return {"status": "error", "results": results}
+    
+    # Test 2: Get client IP
+    try:
+        client_ip = get_client_ip(request)
+        results["get_ip"] = f"OK: {client_ip}"
+    except Exception as e:
+        results["get_ip"] = f"FAILED: {e}"
+        return {"status": "error", "results": results}
+    
+    # Test 3: Check IP limit
+    try:
+        from api.rate_limiting import check_ip_signup_limit
+        ip_allowed = check_ip_signup_limit(client_ip, db)
+        results["check_ip_limit"] = f"OK: allowed={ip_allowed}"
+    except Exception as e:
+        results["check_ip_limit"] = f"FAILED: {e}\n{traceback.format_exc()}"
+        return {"status": "error", "results": results}
+    
+    # Test 4: Check disposable email
+    try:
+        from api.rate_limiting import is_disposable_email
+        is_disposable = is_disposable_email("test@example.com", db)
+        results["check_disposable"] = f"OK: disposable={is_disposable}"
+    except Exception as e:
+        results["check_disposable"] = f"FAILED: {e}\n{traceback.format_exc()}"
+        return {"status": "error", "results": results}
+    
+    # Test 5: Check spending cap
+    try:
+        from api.rate_limiting import check_daily_spending_cap
+        cap_ok = check_daily_spending_cap(db)
+        results["check_spending_cap"] = f"OK: within_cap={cap_ok}"
+    except Exception as e:
+        results["check_spending_cap"] = f"FAILED: {e}\n{traceback.format_exc()}"
+        return {"status": "error", "results": results}
+    
+    return {"status": "success", "results": results}
