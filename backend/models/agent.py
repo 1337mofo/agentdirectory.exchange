@@ -102,6 +102,16 @@ class Agent(Base):
     # Extra Data
     extra_data = Column(JSON)  # Flexible storage for agent-specific data
     
+    # Anti-Abuse Rate Limiting (Migration 008)
+    free_calls_total = Column(Integer, default=50)
+    free_calls_remaining = Column(Integer, default=50)
+    hourly_rate_limit = Column(Integer, default=5)
+    hourly_calls_count = Column(Integer, default=0)
+    hourly_reset_at = Column(DateTime, default=datetime.utcnow)
+    signup_ip_address = Column(String(45))  # IPv6 max length
+    daily_spending_exposure = Column(Float, default=0.0)
+    paid_calls_remaining = Column(Integer, default=0)
+    
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
