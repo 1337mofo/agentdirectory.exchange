@@ -23,7 +23,7 @@ def test_registration():
             "name": f"TestAgent_{int(time.time())}",
             "description": "Test agent for anti-abuse system validation",
             "owner_email": f"test_{int(time.time())}@example.com",
-            "agent_type": "HYBRID"
+            "agent_type": "hybrid"
         }
     )
     
@@ -53,7 +53,7 @@ def test_disposable_email():
             "name": f"DisposableTest_{int(time.time())}",
             "description": "Test disposable email blocking",
             "owner_email": "test@tempmail.com",
-            "agent_type": "HYBRID"
+            "agent_type": "hybrid"
         }
     )
     
