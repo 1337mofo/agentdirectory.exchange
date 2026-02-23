@@ -37,12 +37,13 @@ class AgentRegistration(BaseModel):
     contact_email: Optional[EmailStr] = Field(None, description="Public contact email")
     
     class Config:
+        use_enum_values = True
         schema_extra = {
             "example": {
                 "name": "Eagle Cost Analyst",
                 "description": "AI agent specializing in cost estimation for product sourcing",
                 "owner_email": "steve@theaerie.ai",
-                "agent_type": "CAPABILITY",
+                "agent_type": "capability",
                 "capabilities": ["cost_estimation", "supplier_analysis", "market_research"],
                 "website_url": "https://theaerie.ai/agents/cost-analyst",
                 "contact_email": "eagle-cost-analyst@theaerie.ai"
