@@ -4,11 +4,16 @@ Tool Registry API Endpoints (MCP Tools Marketplace)
 
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 from uuid import uuid4
+import httpx
 
 from database.base import get_db, get_db_connection
+from api.agent_auth import get_current_agent
+from api.rate_limiting import check_rate_limit, consume_call_credit
+from models.agent import Agent
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/tools", tags=["tools"])
 
@@ -312,5 +317,176 @@ async def record_call(tool_id: str):
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+
+# --- Tool Execution Proxy (Agent-Ready) ---
+
+class ToolExecutionRequest(BaseModel):
+    """Request to execute a tool"""
+    parameters: Optional[dict[str, Any]] = None
+    timeout_seconds: int = 30
+
+
+class ToolExecutionResponse(BaseModel):
+    """Response from tool execution"""
+    success: bool
+    tool_id: str
+    tool_name: str
+    result: Optional[Any] = None
+    error: Optional[str] = None
+    execution_time_ms: Optional[int] = None
+    cost_usd: float
+    credits_remaining: dict
+
+
+@router.post("/{tool_id}/execute", response_model=ToolExecutionResponse)
+async def execute_tool(
+    tool_id: str,
+    request: ToolExecutionRequest,
+    agent: Agent = Depends(get_current_agent),
+    db: Session = Depends(get_db)
+):
+    """
+    Execute a tool through the platform (agent-ready endpoint)
+    
+    **Rate Limits:**
+    - Free tier: 50 total calls, 5 calls/hour refill
+    - Paid tier: No hourly limit, uses paid credits
+    
+    **Returns:**
+    - Tool execution result
+    - Credits consumed
+    - Credits remaining
+    
+    **HTTP Status Codes:**
+    - 200: Success
+    - 401: Authentication failed
+    - 404: Tool not found
+    - 429: Rate limit exceeded
+    - 500: Execution error
+    """
+    import time
+    start_time = time.time()
+    
+    # Check rate limits
+    limit_check = await check_rate_limit(agent, db)
+    
+    if not limit_check["allowed"]:
+        raise HTTPException(
+            status_code=429,
+            detail=limit_check["reason"],
+            headers={
+                "X-RateLimit-Remaining": str(limit_check["limits"]["free_calls_remaining"]),
+                "X-RateLimit-Reset": str(limit_check["limits"]["hourly_resets_in_seconds"]),
+                "Retry-After": str(limit_check["limits"]["hourly_resets_in_seconds"])
+            }
+        )
+    
+    # Get tool details
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            """SELECT id, name, per_call_price_usd, api_endpoint, is_active 
+               FROM tools WHERE id = %s""",
+            (tool_id,)
+        )
+        tool = cur.fetchone()
+        
+        if not tool:
+            raise HTTPException(status_code=404, detail="Tool not found")
+        
+        tool_id, tool_name, per_call_price, api_endpoint, is_active = tool
+        
+        if not is_active:
+            raise HTTPException(status_code=400, detail="Tool is not active")
+        
+        if not api_endpoint:
+            raise HTTPException(
+                status_code=501,
+                detail="Tool does not have an API endpoint configured"
+            )
+        
+        # Consume call credit
+        cost_usd = per_call_price or 0.005  # Default to $0.005 if not set
+        await consume_call_credit(agent, cost_usd, db)
+        
+        # Execute tool via HTTP proxy
+        try:
+            async with httpx.AsyncClient(timeout=request.timeout_seconds) as client:
+                response = await client.post(
+                    api_endpoint,
+                    json=request.parameters or {},
+                    headers={
+                        "X-Agent-ID": str(agent.id),
+                        "X-Tool-ID": tool_id,
+                        "Content-Type": "application/json"
+                    }
+                )
+                
+                execution_time = int((time.time() - start_time) * 1000)
+                
+                # Record call metrics
+                cur.execute(
+                    "UPDATE tools SET total_calls = total_calls + 1, updated_at = NOW() WHERE id = %s",
+                    (tool_id,)
+                )
+                conn.commit()
+                
+                # Get updated credits
+                from api.rate_limiting import get_rate_limit_info
+                credits_info = get_rate_limit_info(agent)
+                
+                if response.status_code >= 400:
+                    return ToolExecutionResponse(
+                        success=False,
+                        tool_id=tool_id,
+                        tool_name=tool_name,
+                        error=f"Tool returned HTTP {response.status_code}: {response.text}",
+                        execution_time_ms=execution_time,
+                        cost_usd=cost_usd,
+                        credits_remaining=credits_info
+                    )
+                
+                return ToolExecutionResponse(
+                    success=True,
+                    tool_id=tool_id,
+                    tool_name=tool_name,
+                    result=response.json() if response.headers.get("content-type", "").startswith("application/json") else response.text,
+                    execution_time_ms=execution_time,
+                    cost_usd=cost_usd,
+                    credits_remaining=credits_info
+                )
+                
+        except httpx.TimeoutException:
+            # Refund credit on timeout
+            if agent.paid_calls_remaining and agent.paid_calls_remaining > 0:
+                agent.paid_calls_remaining += 1
+            else:
+                agent.free_calls_remaining += 1
+                agent.hourly_calls_count -= 1
+            db.commit()
+            
+            raise HTTPException(
+                status_code=504,
+                detail=f"Tool execution timed out after {request.timeout_seconds} seconds"
+            )
+        
+        except Exception as e:
+            # Refund credit on error
+            if agent.paid_calls_remaining and agent.paid_calls_remaining > 0:
+                agent.paid_calls_remaining += 1
+            else:
+                agent.free_calls_remaining += 1
+                agent.hourly_calls_count -= 1
+            db.commit()
+            
+            raise HTTPException(
+                status_code=500,
+                detail=f"Tool execution error: {str(e)}"
+            )
+    
     finally:
         conn.close()

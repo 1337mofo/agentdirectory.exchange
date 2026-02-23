@@ -2,7 +2,7 @@
 Agent Registration & API Key Management
 Endpoints for agent signup and key rotation
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
@@ -94,12 +94,20 @@ class AgentAuthStatus(BaseModel):
 # ============================================================================
 
 @router.post("/register", response_model=AgentRegistrationResponse, status_code=status.HTTP_201_CREATED)
-def register_agent(
+async def register_agent(
     registration: AgentRegistration,
+    request: Request,
     db: Session = Depends(get_db)
 ):
     """
     Register a new agent and receive API key
+    
+    **Anti-Abuse Protection:**
+    - 50 free calls total
+    - 5 calls/hour refill rate
+    - Max 5 signups per IP per day
+    - Disposable email blocking
+    - Platform-wide $50/day free tier cap
     
     **Important:** API key is shown only once. Store it securely.
     
@@ -113,6 +121,41 @@ def register_agent(
     Authorization: Bearer eagle_live_XXXXXXXXXXXXX
     ```
     """
+    from api.rate_limiting import (
+        get_client_ip,
+        check_ip_signup_limit,
+        record_ip_signup,
+        is_disposable_email,
+        check_daily_spending_cap
+    )
+    
+    # Get client IP
+    client_ip = get_client_ip(request)
+    
+    # Check IP signup limit (5 per day)
+    ip_allowed = await check_ip_signup_limit(client_ip, db)
+    if not ip_allowed:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many signups from this IP address today. Limit: 5 signups per day. Try again tomorrow."
+        )
+    
+    # Check disposable email
+    is_disposable = await is_disposable_email(registration.owner_email, db)
+    if is_disposable:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Disposable email addresses are not allowed. Please use a permanent email address."
+        )
+    
+    # Check daily platform spending cap
+    cap_ok = await check_daily_spending_cap(db)
+    if not cap_ok:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Daily free tier capacity reached. Please try again tomorrow or purchase paid credits."
+        )
+    
     # Check if agent name already exists
     existing = db.query(Agent).filter(Agent.name == registration.name).first()
     if existing:
@@ -124,7 +167,7 @@ def register_agent(
     # Generate API key
     api_key = generate_api_key()
     
-    # Create agent
+    # Create agent with rate limiting defaults
     agent = Agent(
         name=registration.name,
         description=registration.description,
@@ -138,6 +181,15 @@ def register_agent(
         subscription_tier="free",
         source_url=registration.website_url,
         owner_user_id=None,  # TODO: Link to user accounts in Phase 2
+        # Anti-abuse rate limiting
+        free_calls_total=50,
+        free_calls_remaining=50,
+        hourly_rate_limit=5,
+        hourly_calls_count=0,
+        hourly_reset_at=datetime.utcnow(),
+        signup_ip_address=client_ip,
+        daily_spending_exposure=0.0,
+        paid_calls_remaining=0
     )
     
     # Set contact email if provided
@@ -148,12 +200,15 @@ def register_agent(
     db.commit()
     db.refresh(agent)
     
+    # Record IP signup
+    await record_ip_signup(client_ip, db)
+    
     return AgentRegistrationResponse(
         success=True,
         agent_id=str(agent.id),
         name=agent.name,
         api_key=api_key,
-        message="Agent registered successfully. Store your API key securely - it won't be shown again."
+        message="Agent registered successfully. You have 50 free calls (5 calls/hour). Store your API key securely - it won't be shown again."
     )
 
 
@@ -222,6 +277,25 @@ def get_my_agent(agent: Agent = Depends(get_current_agent)):
     Returns: Complete agent object (same as /agents/{agent_id})
     """
     return agent.to_dict()
+
+
+@router.get("/rate-limits")
+async def get_rate_limits(agent: Agent = Depends(get_current_agent)):
+    """
+    Get current rate limit status
+    
+    Returns:
+    - Free credits remaining
+    - Paid credits remaining
+    - Hourly limit status
+    - Time until reset
+    - Upgrade recommendation
+    
+    Use this to display rate limit info in your agent's dashboard
+    """
+    from api.rate_limiting import get_rate_limit_info
+    
+    return get_rate_limit_info(agent)
 
 
 # ============================================================================
