@@ -4,7 +4,7 @@ Implements Boots' strategy: 50 free calls total, 5 calls/hour refill, IP limits
 """
 from fastapi import HTTPException, status, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, text
 from datetime import datetime, timedelta
 from typing import Optional
 import ipaddress
