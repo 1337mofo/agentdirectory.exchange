@@ -154,6 +154,20 @@ frontend_dir = os.path.join(base_dir, "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 
+
+# FAQ and API Documentation Routes (Added 2026-02-25)
+@app.get("/faq", response_class=FileResponse)
+async def serve_faq():
+    '''Serve the FAQ page for human SEO acquisition'''
+    faq_path = os.path.join(frontend_dir, "faq.html")
+    return FileResponse(faq_path)
+
+@app.get("/api-docs", response_class=FileResponse)
+async def serve_api_docs():
+    '''Serve the API documentation for agent integration'''
+    docs_path = os.path.join(frontend_dir, "docs.html")
+    return FileResponse(docs_path)
+
 # Basic authentication for monitoring portal
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from secrets import compare_digest
@@ -684,3 +698,4 @@ def startup_event():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
