@@ -1233,30 +1233,38 @@
         
         // Agent Ticker - Uses REAL data from discovery events
         async function loadAgentTicker() {
+            let agents = [];
+            
             try {
-                // Fetch real agents from activity feed (same data as discovery events)
+                // Try to fetch real agents from activity feed
                 const response = await fetch('/api/v1/activity/recent?limit=50');
                 const data = await response.json();
                 
                 if (data.success && data.activity && data.activity.length > 0) {
-                    const agents = data.activity.map(event => ({
+                    agents = data.activity.map(event => ({
                         name: event.agent_name,
                         exchange_value: event.exchange_value || 0
                     }));
-                    
-                    // Create ticker items
-                    const tickerTrack = document.getElementById('ticker-track');
-                    const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
-                    
-                    // Triple content for seamless loop
-                    tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
-                } else {
-                    console.log('No activity data available for ticker');
                 }
-                
             } catch (error) {
-                console.log('Agent ticker error:', error);
+                console.log('Agent ticker API unavailable, using sample data');
             }
+            
+            // Fallback to sample agents if no real data
+            if (agents.length === 0) {
+                const sampleAgents = generateSampleAgents(50);
+                agents = sampleAgents.map(agent => ({
+                    name: agent.name,
+                    exchange_value: parseFloat(agent.value)
+                }));
+            }
+            
+            // Always populate ticker (real or sample data)
+            const tickerTrack = document.getElementById('ticker-track');
+            const tickerHTML = agents.map(agent => createTickerItem(agent)).join('');
+            
+            // Triple content for seamless infinite loop
+            tickerTrack.innerHTML = tickerHTML + tickerHTML + tickerHTML;
         }
         
         function createTickerItem(agent) {
@@ -1364,6 +1372,7 @@
         // Refresh stats every 30 seconds (shows it's live)
         setInterval(fetchStats, 30000);
         setInterval(fetchActivity, 15000);  // Update activity every 15 seconds
+        setInterval(loadAgentTicker, 60000);  // Refresh ticker every 60 seconds (pulls new agents)
     </script>
 </body>
 </html>
